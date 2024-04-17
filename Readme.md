@@ -1,7 +1,7 @@
 # Проект «Большое путешествие»
 
 * Студент: [Aleksy Anishchenko](https://up.htmlacademy.ru/ecmascript-individual/2/user/1848665).
-* Наставник: `Неизвестно`.
+* Наставник: [Николай Котиков](https://up.htmlacademy.ru/ecmascript-individual/2/user/818323).
 
 ---
 
