@@ -88,7 +88,7 @@ function createFormPointTemplate() {
   );
 }
 
-export default class FormPoint {
+export default class FormPointView {
   getTemplate() {
     return createFormPointTemplate();
   }

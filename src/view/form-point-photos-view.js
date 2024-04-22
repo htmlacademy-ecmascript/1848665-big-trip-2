@@ -14,7 +14,7 @@ function createFormPointPhotosTemplate() {
   );
 }
 
-export default class FormPointPhotos {
+export default class FormPointPhotosView {
   getTemplate() {
     return createFormPointPhotosTemplate();
   }

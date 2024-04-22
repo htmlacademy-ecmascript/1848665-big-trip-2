@@ -50,7 +50,7 @@ function createFormPointOffersTemplate() {
   );
 }
 
-export default class FormPointOffers {
+export default class FormPointOffersView {
   getTemplate() {
     return createFormPointOffersTemplate();
   }

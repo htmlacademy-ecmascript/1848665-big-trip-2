@@ -9,7 +9,7 @@ function createFormPointDestinationTemplate() {
   );
 }
 
-export default class FormPointDestination {
+export default class FormPointDestinationView {
   getTemplate() {
     return createFormPointDestinationTemplate();
   }
