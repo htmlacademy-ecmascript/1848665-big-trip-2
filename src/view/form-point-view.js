@@ -1,6 +1,90 @@
 import {createElement} from '../render.js';
+import {getRandomNumber, humanizePointDateTimeFormPoints} from '../utils.js';
 
-function createFormPointTemplate() {
+function createOffers(array, offers, type) {
+  const typeOffers = array.reduce((acc, currentValue) => {
+    if (currentValue.type === type) {
+      return [...acc, ...currentValue.offers];
+    }
+    return acc;
+  }, []);
+
+  return typeOffers.map((element) => {
+    const offerTitle = element.title;
+    const offerPrice = element.price;
+    const isChecked = offers.includes(element.id);
+
+    return (
+      `<div class="event__offer-selector">
+        <input class="event__offer-checkbox visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${isChecked ? 'checked' : ''}>
+        <label class="event__offer-label" for="event-offer-luggage-1">
+          <span class="event__offer-title">${offerTitle}</span>
+          &plus;&euro;&nbsp;
+          <span class="event__offer-price">${offerPrice}</span>
+        </label>
+      </div>`
+    );
+  }).join('');
+}
+
+function createOffersContainer(arrayOffers, offers, type) {
+  const typeOffers = arrayOffers.filter((element) => type === element.type)[0];
+  if (!typeOffers.offers.length) {
+    return '';
+  }
+  return (
+    `<section class="event__section event__section--offers">
+      <h3 class="event__section-title event__section-title--offers">Offers</h3>
+      <div class="event__available-offers">
+        ${createOffers(arrayOffers, offers, type)}
+      </div>
+    </section>`
+  );
+}
+
+function createDestinationPictures(pointDestination) {
+  if (!pointDestination.pictures.length) {
+    return '';
+  }
+  return (
+    `<div class="event__photos-container">
+      <div class="event__photos-tape">
+        ${createDestinationPicture(pointDestination)}
+      </div>
+    </div>`
+  );
+}
+
+function createDestinationPicture(pointDestination) {
+  return pointDestination.pictures.map((element) => {
+    const pictureSrc = element.src;
+    const pictureDescription = element.alt;
+    return (
+      `<img class="event__photo" src="${pictureSrc}${getRandomNumber()}" alt="${pictureDescription}">`
+    );
+  }).join('');
+}
+
+function createDestination(pointDestination) {
+  if (pointDestination) {
+    return (
+      `<section class="event__section event__section--destination">
+        <h3 class="event__section-title event__section-title--destination">Destination</h3>
+        <p class="event__destination-description">${pointDestination.description}</p>
+        ${createDestinationPictures(pointDestination)}
+      </section>`
+    );
+  }
+  return '';
+}
+function createFormPointTemplate(formPoint, arrayDestination, arrayOffers) {
+  const { basePrice, dateFrom, dateTo, destination, offers, type } = formPoint;
+  const pointDestination = arrayDestination.filter((element) => destination === element.id)[0];
+  const destinationTitle = pointDestination.name;
+  const dateTimeFrom = humanizePointDateTimeFormPoints(dateFrom);
+  const dateTimeTo = humanizePointDateTimeFormPoints(dateTo);
+
+
   return (
     `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -55,9 +139,9 @@ function createFormPointTemplate() {
           </div>
           <div class="event__field-group  event__field-group--destination">
             <label class="event__label  event__type-output" for="event-destination-1">
-              Flight
+              ${type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="Geneva" list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationTitle}" list="destination-list-1">
             <datalist id="destination-list-1">
               <option value="Amsterdam"></option>
               <option value="Geneva"></option>
@@ -66,22 +150,24 @@ function createFormPointTemplate() {
           </div>
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">From</label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="19/03/19 00:00">
+            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateTimeFrom}">
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">To</label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="19/03/19 00:00">
+            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTimeTo}">
           </div>
           <div class="event__field-group  event__field-group--price">
             <label class="event__label" for="event-price-1">
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="">
+            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
           </div>
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
           <button class="event__reset-btn" type="reset">Cancel</button>
         </header>
         <section class="event__details">
+          ${createOffersContainer(arrayOffers, offers, type)}
+          ${createDestination(pointDestination)}
         </section>
       </form>
     </li>`
@@ -89,8 +175,14 @@ function createFormPointTemplate() {
 }
 
 export default class FormPointView {
+  constructor({formPoint, formDestination, formOffers}) {
+    this.formPoint = formPoint;
+    this.formDestination = formDestination;
+    this.formOffers = formOffers;
+  }
+
   getTemplate() {
-    return createFormPointTemplate();
+    return createFormPointTemplate(this.formPoint, this.formDestination, this.formOffers);
   }
 
   getElement() {
