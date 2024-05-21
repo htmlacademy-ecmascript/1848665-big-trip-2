@@ -1,4 +1,4 @@
-const pointType = [
+const pointTypes = [
   'Taxi',
   'Bus',
   'Train',
@@ -10,4 +10,4 @@ const pointType = [
   'Restaurant'
 ];
 
-export {pointType};
+export {pointTypes};
