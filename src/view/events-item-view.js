@@ -72,14 +72,14 @@ function createEventsItemTemplate(point, arrayDestinations, arrayOffers) {
 }
 
 export default class EventsItemView {
-  constructor({point, destination, offers}) {
+  constructor({point, destinations, offers}) {
     this.point = point;
-    this.destination = destination;
+    this.destinations = destinations;
     this.offers = offers;
   }
 
   getTemplate() {
-    return createEventsItemTemplate(this.point, this.destination, this.offers);
+    return createEventsItemTemplate(this.point, this.destinations, this.offers);
   }
 
   getElement() {

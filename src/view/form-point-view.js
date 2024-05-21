@@ -77,9 +77,9 @@ function createDestination(pointDestination) {
   }
   return '';
 }
-function createFormPointTemplate(formPoint, arrayDestination, arrayOffers) {
-  const { basePrice, dateFrom, dateTo, destination, offers, type } = formPoint;
-  const pointDestination = arrayDestination.filter((element) => destination === element.id)[0];
+function createFormPointTemplate(point, arrayDestinations, arrayOffers) {
+  const { basePrice, dateFrom, dateTo, destination, offers, type } = point;
+  const pointDestination = arrayDestinations.filter((element) => destination === element.id)[0];
   const destinationTitle = pointDestination.name;
   const dateTimeFrom = humanizePointDateTimeFormPoints(dateFrom);
   const dateTimeTo = humanizePointDateTimeFormPoints(dateTo);
@@ -175,14 +175,14 @@ function createFormPointTemplate(formPoint, arrayDestination, arrayOffers) {
 }
 
 export default class FormPointView {
-  constructor({formPoint, formDestination, formOffers}) {
-    this.formPoint = formPoint;
-    this.formDestination = formDestination;
-    this.formOffers = formOffers;
+  constructor({point, destinations, offers}) {
+    this.point = point;
+    this.destinations = destinations;
+    this.offers = offers;
   }
 
   getTemplate() {
-    return createFormPointTemplate(this.formPoint, this.formDestination, this.formOffers);
+    return createFormPointTemplate(this.point, this.destinations, this.offers);
   }
 
   getElement() {

@@ -8,27 +8,25 @@ export default class BoardPresenter {
   filtersList = new SortView();
   eventsListComponent = new EventsListView();
 
-  constructor({boardContainer, pointsModel, formPointModel}) {
+  constructor({boardContainer, pointsModel}) {
     this.boardContainer = boardContainer;
     this.pointsModel = pointsModel;
-    this.formPointModel = formPointModel;
   }
 
   init() {
     this.boardPoints = [...this.pointsModel.getPoints()];
-    this.boardDestination = [...this.pointsModel.getDestination()];
+    this.boardDestinations = [...this.pointsModel.getDestinations()];
     this.boardOffers = [...this.pointsModel.getOffers()];
-
-    this.boardFormPoint = this.formPointModel.getFormPoint();
-    this.boardFormDestination = [...this.formPointModel.getFormDestination()];
-    this.boardFormOffers = [...this.formPointModel.getFormOffers()];
 
     render(this.filtersList, this.boardContainer);
     render(this.eventsListComponent, this.boardContainer);
-    render(new FormPointView({formPoint: this.boardFormPoint, formDestination: this.boardFormDestination, formOffers: this.boardFormOffers}), this.eventsListComponent.getElement(), RenderPosition.BEFOREEND);
 
     for (let i = 0; i < this.boardPoints.length; i++) {
-      render(new EventsItemView({point: this.boardPoints[i], destination: this.boardDestination, offers: this.boardOffers}), this.eventsListComponent.getElement());
+      if (i === 0) {
+        render(new FormPointView({point: this.boardPoints[i], destinations: this.boardDestinations, offers: this.boardOffers}), this.eventsListComponent.getElement(), RenderPosition.BEFOREEND);
+      } else {
+        render(new EventsItemView({point: this.boardPoints[i], destinations: this.boardDestinations, offers: this.boardOffers}), this.eventsListComponent.getElement());
+      }
     }
   }
 }

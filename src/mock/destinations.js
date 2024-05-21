@@ -1,4 +1,4 @@
-export const mockDestination = [
+export const mockDestinations = [
   {
     id: 'ddd5dd55-d5dd-5dd55-d55d-5d555d555d55',
     description: 'Rome is the capital and largest city of Italy',
