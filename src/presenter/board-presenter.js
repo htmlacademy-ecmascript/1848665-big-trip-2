@@ -1,8 +1,8 @@
+import {RenderPosition, render} from '../framework/render.js';
 import EventsListView from '../view/events-list-view.js';
 import EventsItemView from '../view/events-item-view.js';
 import SortView from '../view/sort-view .js';
 import FormPointView from '../view/form-point-view.js';
-import {render, RenderPosition} from '../render.js';
 
 export default class BoardPresenter {
   filtersList = new SortView();
@@ -23,9 +23,9 @@ export default class BoardPresenter {
 
     for (let i = 0; i < this.boardPoints.length; i++) {
       if (i === 0) {
-        render(new FormPointView({point: this.boardPoints[i], destinations: this.boardDestinations, offers: this.boardOffers}), this.eventsListComponent.getElement(), RenderPosition.BEFOREEND);
+        render(new FormPointView({point: this.boardPoints[i], destinations: this.boardDestinations, offers: this.boardOffers}), this.eventsListComponent.element, RenderPosition.BEFOREEND);
       } else {
-        render(new EventsItemView({point: this.boardPoints[i], destinations: this.boardDestinations, offers: this.boardOffers}), this.eventsListComponent.getElement());
+        render(new EventsItemView({point: this.boardPoints[i], destinations: this.boardDestinations, offers: this.boardOffers}), this.eventsListComponent.element);
       }
     }
   }

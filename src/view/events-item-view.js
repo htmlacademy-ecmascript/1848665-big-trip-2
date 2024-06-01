@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import {humanizePointDate, humanizePointDateTime, humanizePointMonthDate, humanizePointTime, humanizePointDuration, isPointFavorite} from '../utils.js';
 
 function createOffers(array) {
@@ -71,26 +71,15 @@ function createEventsItemTemplate(point, arrayDestinations, arrayOffers) {
   );
 }
 
-export default class EventsItemView {
+export default class EventsItemView extends AbstractView {
   constructor({point, destinations, offers}) {
+    super();
     this.point = point;
     this.destinations = destinations;
     this.offers = offers;
   }
 
-  getTemplate() {
+  get template() {
     return createEventsItemTemplate(this.point, this.destinations, this.offers);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }
