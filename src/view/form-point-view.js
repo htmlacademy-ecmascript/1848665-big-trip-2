@@ -164,6 +164,9 @@ function createFormPointTemplate(point, arrayDestinations, arrayOffers) {
           </div>
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
           <button class="event__reset-btn" type="reset">Cancel</button>
+          <button class="event__rollup-btn" type="button">
+            <span class="visually-hidden">Open event</span>
+          </button>
         </header>
         <section class="event__details">
           ${createOffersContainer(arrayOffers, offers, type)}
@@ -175,14 +178,36 @@ function createFormPointTemplate(point, arrayDestinations, arrayOffers) {
 }
 
 export default class FormPointView extends AbstractView {
-  constructor({point, destinations, offers}) {
+  #point = null;
+  #destinations = null;
+  #offers = null;
+  #handlerFormSubmit = null;
+  #handlerFormArrow = null;
+
+  constructor({point, destinations, offers, onFormSubmit, onFormArrow}) {
     super();
     this.point = point;
     this.destinations = destinations;
     this.offers = offers;
+    this.#handlerFormSubmit = onFormSubmit;
+    this.#handlerFormArrow = onFormArrow;
+    this.element.querySelector('form')
+      .addEventListener('submit', this.#formSubmitHandler);
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#formClickHandler);
   }
 
   get template() {
     return createFormPointTemplate(this.point, this.destinations, this.offers);
   }
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handlerFormSubmit();
+  };
+
+  #formClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handlerFormArrow();
+  };
 }
