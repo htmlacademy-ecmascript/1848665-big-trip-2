@@ -5,28 +5,45 @@ import SortView from '../view/sort-view .js';
 import FormPointView from '../view/form-point-view.js';
 
 export default class BoardPresenter {
-  filtersList = new SortView();
-  eventsListComponent = new EventsListView();
+  #boardContainer = null;
+  #pointsModel = null;
+  #boardDestinations = null;
+  #boardOffers = null;
+
+  #filtersList = new SortView();
+  #eventsListComponent = new EventsListView();
+
+  #boardPoints = [];
 
   constructor({boardContainer, pointsModel}) {
-    this.boardContainer = boardContainer;
-    this.pointsModel = pointsModel;
+    this.#boardContainer = boardContainer;
+    this.#pointsModel = pointsModel;
   }
 
   init() {
-    this.boardPoints = [...this.pointsModel.getPoints()];
-    this.boardDestinations = [...this.pointsModel.getDestinations()];
-    this.boardOffers = [...this.pointsModel.getOffers()];
+    this.#boardPoints = [...this.#pointsModel.points];
+    this.#boardDestinations = [...this.#pointsModel.destinations];
+    this.#boardOffers = [...this.#pointsModel.offers];
 
-    render(this.filtersList, this.boardContainer);
-    render(this.eventsListComponent, this.boardContainer);
+    render(this.#filtersList, this.#boardContainer);
+    render(this.#eventsListComponent, this.#boardContainer);
 
-    for (let i = 0; i < this.boardPoints.length; i++) {
+    for (let i = 0; i < this.#boardPoints.length; i++) {
       if (i === 0) {
-        render(new FormPointView({point: this.boardPoints[i], destinations: this.boardDestinations, offers: this.boardOffers}), this.eventsListComponent.element, RenderPosition.BEFOREEND);
+        this.#renderFormPoint({point: this.#boardPoints[i], destinations: this.#boardDestinations, offers: this.#boardOffers});
       } else {
-        render(new EventsItemView({point: this.boardPoints[i], destinations: this.boardDestinations, offers: this.boardOffers}), this.eventsListComponent.element);
+        this.#renderPoints({point: this.#boardPoints[i], destinations: this.#boardDestinations, offers: this.#boardOffers});
       }
     }
+  }
+
+  #renderFormPoint({point, destinations, offers}) {
+    const formPointComponent = new FormPointView({point, destinations, offers});
+    render(formPointComponent, this.#eventsListComponent.element);
+  }
+
+  #renderPoints({point, destinations, offers}) {
+    const pointComponent = new EventsItemView({point, destinations, offers});
+    render(pointComponent, this.#eventsListComponent.element, RenderPosition.BEFOREEND);
   }
 }
