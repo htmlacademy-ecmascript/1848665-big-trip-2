@@ -53,7 +53,7 @@ export default class BoardPresenter {
         replaceFormToCard();
         document.removeEventListener('keydown', escKeyDownHandler);
       },
-      onFormArrow: () => {
+      onFormArrowClick: () => {
         replaceFormToCard();
         document.removeEventListener('keydown', escKeyDownHandler);
       }
