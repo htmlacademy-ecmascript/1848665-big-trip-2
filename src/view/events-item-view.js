@@ -32,7 +32,6 @@ function createEventsItemTemplate(point, arrayDestinations, arrayOffers) {
     return acc;
   }, []);
 
-
   const isFavoriteBtn = isPointFavorite(isFavorite);
   return (
     `<li class="trip-events__item">

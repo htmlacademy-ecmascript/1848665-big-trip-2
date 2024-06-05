@@ -1,7 +1,7 @@
-import {RenderPosition, render, replace} from '../framework/render.js';
+import {render, replace} from '../framework/render.js';
 import EventsListView from '../view/events-list-view.js';
 import EventsItemView from '../view/events-item-view.js';
-import SortView from '../view/sort-view .js';
+import SortView from '../view/sort-view.js';
 import FormPointView from '../view/form-point-view.js';
 
 export default class BoardPresenter {
@@ -9,15 +9,16 @@ export default class BoardPresenter {
   #pointsModel = null;
   #boardDestinations = null;
   #boardOffers = null;
+  #sortingModel = null;
 
-  #filtersList = new SortView();
   #eventsListComponent = new EventsListView();
 
   #boardPoints = [];
 
-  constructor({boardContainer, pointsModel}) {
+  constructor({boardContainer, pointsModel, sortingModel}) {
     this.#boardContainer = boardContainer;
     this.#pointsModel = pointsModel;
+    this.#sortingModel = sortingModel;
   }
 
   init() {
@@ -67,11 +68,11 @@ export default class BoardPresenter {
       replace(pointComponent, formPointComponent);
     }
 
-    render(pointComponent, this.#eventsListComponent.element, RenderPosition.BEFOREEND);
+    render(pointComponent, this.#eventsListComponent.element);
   }
 
   #renderBoard() {
-    render(this.#filtersList, this.#boardContainer);
+    render(new SortView({sortingModel: this.#sortingModel}), this.#boardContainer);
     render(this.#eventsListComponent, this.#boardContainer);
 
     for (let i = 0; i < this.#boardPoints.length; i++) {
