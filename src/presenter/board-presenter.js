@@ -1,35 +1,62 @@
-import {render, replace} from '../framework/render.js';
+import {RenderPosition, render, replace} from '../framework/render.js';
+import TripInfoView from '../view/trip-info-view.js';
+import FiltersView from '../view/filters-view.js';
+import SortView from '../view/sort-view.js';
 import EventsListView from '../view/events-list-view.js';
 import EventsItemView from '../view/events-item-view.js';
-import SortView from '../view/sort-view.js';
 import FormPointView from '../view/form-point-view.js';
+import EventsMessageView from '../view/events-message-view.js';
 
 export default class BoardPresenter {
+  #tripInfoContainer = null;
+  #filtersContainer = null;
   #boardContainer = null;
-  #pointsModel = null;
-  #boardDestinations = null;
-  #boardOffers = null;
   #sortingModel = null;
-
-  #eventsListComponent = new EventsListView();
+  #filtersModel = null;
+  #pointsModel = null;
 
   #boardPoints = [];
+  #boardDestinations = [];
+  #boardOffers = [];
+  #sortComponent = null;
+  #filtersComponent = null;
 
-  constructor({boardContainer, pointsModel, sortingModel}) {
+  #eventsListComponent = new EventsListView();
+  #tripInfoComponent = new TripInfoView();
+  #noPointsComponent = new EventsMessageView();
+
+  constructor({tripInfoContainer, filtersContainer, boardContainer, sortingModel, filtersModel, pointsModel}) {
+    this.#tripInfoContainer = tripInfoContainer;
+    this.#filtersContainer = filtersContainer;
     this.#boardContainer = boardContainer;
-    this.#pointsModel = pointsModel;
     this.#sortingModel = sortingModel;
+    this.#filtersModel = filtersModel;
+    this.#pointsModel = pointsModel;
   }
 
   init() {
     this.#boardPoints = [...this.#pointsModel.points];
     this.#boardDestinations = [...this.#pointsModel.destinations];
     this.#boardOffers = [...this.#pointsModel.offers];
+    this.#sortComponent = new SortView({sortingModel: this.#sortingModel});
+    this.#filtersComponent = new FiltersView({filtersModel: this.#filtersModel});
 
     this.#renderBoard();
   }
 
-  #renderPoints({point, destinations, offers}) {
+  #renderFilters() {
+    render(this.#filtersComponent, this.#filtersContainer);
+  }
+
+  #renderSort() {
+    render(this.#sortComponent, this.#boardContainer);
+  }
+
+  #renderNoPoints() {
+    render(this.#noPointsComponent, this.#boardContainer);
+  }
+
+  #renderPoint({point, destinations, offers}) {
     const escKeyDownHandler = (evt) => {
       if (evt.key === 'Escape') {
         evt.preventDefault();
@@ -71,12 +98,26 @@ export default class BoardPresenter {
     render(pointComponent, this.#eventsListComponent.element);
   }
 
-  #renderBoard() {
-    render(new SortView({sortingModel: this.#sortingModel}), this.#boardContainer);
-    render(this.#eventsListComponent, this.#boardContainer);
+  #renderPoits() {
+    this.#boardPoints.forEach((point) => {
+      this.#renderPoint({point: point, destinations: this.#boardDestinations, offers: this.#boardOffers});
+    });
+  }
 
-    for (let i = 0; i < this.#boardPoints.length; i++) {
-      this.#renderPoints({point: this.#boardPoints[i], destinations: this.#boardDestinations, offers: this.#boardOffers});
+  #renderPointsList() {
+    render(this.#eventsListComponent, this.#boardContainer);
+  }
+
+  #renderBoard() {
+    this.#renderFilters();
+    if (this.#boardPoints.length === 0) {
+      this.#renderNoPoints();
+      return;
     }
+    render(this.#tripInfoComponent, this.#tripInfoContainer, RenderPosition.AFTERBEGIN);
+    this.#renderSort();
+    this.#renderPointsList();
+
+    this.#renderPoits();
   }
 }
