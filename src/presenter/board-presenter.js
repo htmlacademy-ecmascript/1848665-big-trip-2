@@ -1,11 +1,10 @@
-import {RenderPosition, render, replace} from '../framework/render.js';
+import {RenderPosition, render} from '../framework/render.js';
 import TripInfoView from '../view/trip-info-view.js';
 import FiltersView from '../view/filters-view.js';
 import SortView from '../view/sort-view.js';
 import EventsListView from '../view/events-list-view.js';
-import EventsItemView from '../view/events-item-view.js';
-import FormPointView from '../view/form-point-view.js';
 import EventsMessageView from '../view/events-message-view.js';
+import PointPresenter from './point-presenter.js';
 
 export default class BoardPresenter {
   #tripInfoContainer = null;
@@ -57,45 +56,10 @@ export default class BoardPresenter {
   }
 
   #renderPoint({point, destinations, offers}) {
-    const escKeyDownHandler = (evt) => {
-      if (evt.key === 'Escape') {
-        evt.preventDefault();
-        replaceFormToCard();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    };
-    const pointComponent = new EventsItemView({
-      point,
-      destinations,
-      offers,
-      onEditClick: () => {
-        replaceCardToForm();
-        document.addEventListener('keydown', escKeyDownHandler);
-      }
+    const pointPresenter = new PointPresenter({
+      eventsListComponent: this.#eventsListComponent,
     });
-    const formPointComponent = new FormPointView({
-      point,
-      destinations,
-      offers,
-      onFormSubmit: () => {
-        replaceFormToCard();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      },
-      onFormArrowClick: () => {
-        replaceFormToCard();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    });
-
-    function replaceCardToForm() {
-      replace(formPointComponent, pointComponent);
-    }
-
-    function replaceFormToCard() {
-      replace(pointComponent, formPointComponent);
-    }
-
-    render(pointComponent, this.#eventsListComponent.element);
+    pointPresenter.init({point, destinations, offers});
   }
 
   #renderPoits() {
