@@ -17,6 +17,7 @@ export default class BoardPresenter {
   #boardPoints = [];
   #boardDestinations = [];
   #boardOffers = [];
+  #pointsPresenter = new Map();
   #sortComponent = null;
   #filtersComponent = null;
 
@@ -60,12 +61,18 @@ export default class BoardPresenter {
       eventsListComponent: this.#eventsListComponent,
     });
     pointPresenter.init({point, destinations, offers});
+    this.#pointsPresenter.set(point.id, pointPresenter);
   }
 
   #renderPoits() {
     this.#boardPoints.forEach((point) => {
       this.#renderPoint({point: point, destinations: this.#boardDestinations, offers: this.#boardOffers});
     });
+  }
+
+  #clearPointsList() {
+    this.#pointsPresenter.forEach((presenter) => presenter.destroy());
+    this.#pointsPresenter.clear();
   }
 
   #renderPointsList() {

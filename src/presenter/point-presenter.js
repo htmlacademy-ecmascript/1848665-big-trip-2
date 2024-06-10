@@ -1,4 +1,4 @@
-import {render,replace} from '../framework/render.js';
+import {render,replace, remove} from '../framework/render.js';
 import EventsItemView from '../view/events-item-view.js';
 import FormPointView from '../view/form-point-view.js';
 
@@ -19,11 +19,15 @@ export default class PointPresenter {
     this.#destinations = destinations;
     this.#offers = offers;
 
+    const prevPointComponent = this.#pointComponent;
+    const prevFormPointComponent = this.#formPointComponent;
+
     this.#pointComponent = new EventsItemView({
       point: this.#point,
       destinations: this.#destinations,
       offers: this.#offers,
       onEditClick: this.#handleEditClick,
+      onEditFavorite: this.#handleFavoriteClick,
     });
 
     this.#formPointComponent = new FormPointView({
@@ -34,7 +38,24 @@ export default class PointPresenter {
       onFormArrowClick: this.#handleFormArrowClick,
     });
 
-    render(this.#pointComponent, this.#eventsListComponent.element);
+    if (prevPointComponent === null || prevFormPointComponent === null) {
+      render(this.#pointComponent, this.#eventsListComponent.element);
+      return;
+    }
+
+    if (this.#eventsListComponent.element.contains(prevPointComponent.element)) {
+      replace(this.#pointComponent, prevPointComponent);
+    }
+    if (this.#eventsListComponent.element.contains(prevFormPointComponent.element)) {
+      replace(this.#formPointComponent, prevFormPointComponent);
+    }
+
+    this.#destroy();
+  }
+
+  #destroy() {
+    remove(this.#pointComponent);
+    remove(this.#formPointComponent);
   }
 
   #escKeyDownHandler = (evt) => {
@@ -48,6 +69,9 @@ export default class PointPresenter {
   #handleEditClick = () => {
     this.#replaceCardToForm();
     document.addEventListener('keydown', this.#escKeyDownHandler);
+  };
+
+  #handleFavoriteClick = () => {
   };
 
   #handleFormSubmit = () => {
