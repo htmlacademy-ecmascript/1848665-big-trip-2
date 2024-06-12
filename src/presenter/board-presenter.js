@@ -47,7 +47,7 @@ export default class BoardPresenter {
 
   #handlePointChange = (updatedPoint) => {
     this.#boardPoints = updateItem(this.#boardPoints, updatedPoint);
-    this.#pointsPresenter.get(updatedPoint.id).init(updatedPoint);
+    this.#pointsPresenter.get(updatedPoint.id).init({point: updatedPoint, destinations:this.#boardDestinations, offers: this.#boardOffers});
   };
 
   #renderFilters() {

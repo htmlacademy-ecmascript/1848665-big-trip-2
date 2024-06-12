@@ -52,7 +52,8 @@ export default class PointPresenter {
       replace(this.#formPointComponent, prevFormPointComponent);
     }
 
-    this.#destroy();
+    remove(prevPointComponent);
+    remove(prevFormPointComponent);
   }
 
   #destroy() {
