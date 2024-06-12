@@ -50,6 +50,10 @@ export default class BoardPresenter {
     this.#pointsPresenter.get(updatedPoint.id).init({point: updatedPoint, destinations:this.#boardDestinations, offers: this.#boardOffers});
   };
 
+  #handleModeChange = () => {
+    this.#pointsPresenter.forEach((presenter) => presenter.resetView());
+  };
+
   #renderFilters() {
     render(this.#filtersComponent, this.#filtersContainer);
   }
@@ -66,6 +70,7 @@ export default class BoardPresenter {
     const pointPresenter = new PointPresenter({
       eventsListComponent: this.#eventsListComponent,
       onDataChange: this.#handlePointChange,
+      onModeChange: this.#handleModeChange,
     });
     pointPresenter.init({point, destinations, offers});
     this.#pointsPresenter.set(point.id, pointPresenter);

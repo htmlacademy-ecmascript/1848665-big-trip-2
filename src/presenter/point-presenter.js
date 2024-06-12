@@ -2,18 +2,28 @@ import {render,replace, remove} from '../framework/render.js';
 import EventsItemView from '../view/events-item-view.js';
 import FormPointView from '../view/form-point-view.js';
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
 export default class PointPresenter {
   #eventsListComponent = null;
   #handleDataChange = null;
+  #handleModeChange = null;
+
   #point = null;
   #destinations = null;
   #offers = null;
+  #mode = Mode.DEFAULT;
+
   #pointComponent = null;
   #formPointComponent = null;
 
-  constructor({eventsListComponent, onDataChange}) {
+  constructor({eventsListComponent, onDataChange, onModeChange}) {
     this.#eventsListComponent = eventsListComponent;
     this.#handleDataChange = onDataChange;
+    this.#handleModeChange = onModeChange;
   }
 
   init({point, destinations, offers}) {
@@ -56,11 +66,6 @@ export default class PointPresenter {
     remove(prevFormPointComponent);
   }
 
-  #destroy() {
-    remove(this.#pointComponent);
-    remove(this.#formPointComponent);
-  }
-
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
@@ -88,11 +93,25 @@ export default class PointPresenter {
     document.addEventListener('keydown', this.#escKeyDownHandler);
   };
 
+  #destroy() {
+    remove(this.#pointComponent);
+    remove(this.#formPointComponent);
+  }
+
   #replaceCardToForm() {
     replace(this.#formPointComponent, this.#pointComponent);
+    this.#handleModeChange();
+    this.#mode = Mode.EDITING;
   }
 
   #replaceFormToCard() {
     replace(this.#pointComponent, this.#formPointComponent);
+    this.#mode = Mode.DEFAULT;
+  }
+
+  resetView() {
+    if (this.#mode !== Mode.DEFAULT) {
+      this.#replaceFormToCard();
+    }
   }
 }
