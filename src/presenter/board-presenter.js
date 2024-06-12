@@ -1,3 +1,4 @@
+import {updateItem} from '../utils.js';
 import {RenderPosition, render} from '../framework/render.js';
 import TripInfoView from '../view/trip-info-view.js';
 import FiltersView from '../view/filters-view.js';
@@ -44,6 +45,11 @@ export default class BoardPresenter {
     this.#renderBoard();
   }
 
+  #handlePointChange = (updatedPoint) => {
+    this.#boardPoints = updateItem(this.#boardPoints, updatedPoint);
+    this.#pointsPresenter.get(updatedPoint.id).init(updatedPoint);
+  };
+
   #renderFilters() {
     render(this.#filtersComponent, this.#filtersContainer);
   }
@@ -59,6 +65,7 @@ export default class BoardPresenter {
   #renderPoint({point, destinations, offers}) {
     const pointPresenter = new PointPresenter({
       eventsListComponent: this.#eventsListComponent,
+      onDataChange: this.#handlePointChange,
     });
     pointPresenter.init({point, destinations, offers});
     this.#pointsPresenter.set(point.id, pointPresenter);

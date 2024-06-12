@@ -4,14 +4,16 @@ import FormPointView from '../view/form-point-view.js';
 
 export default class PointPresenter {
   #eventsListComponent = null;
+  #handleDataChange = null;
   #point = null;
   #destinations = null;
   #offers = null;
   #pointComponent = null;
   #formPointComponent = null;
 
-  constructor({eventsListComponent}) {
+  constructor({eventsListComponent, onDataChange}) {
     this.#eventsListComponent = eventsListComponent;
+    this.#handleDataChange = onDataChange;
   }
 
   init({point, destinations, offers}) {
@@ -27,7 +29,7 @@ export default class PointPresenter {
       destinations: this.#destinations,
       offers: this.#offers,
       onEditClick: this.#handleEditClick,
-      onEditFavorite: this.#handleFavoriteClick,
+      onFavoriteClick: this.#handleFavoriteClick,
     });
 
     this.#formPointComponent = new FormPointView({
@@ -72,6 +74,7 @@ export default class PointPresenter {
   };
 
   #handleFavoriteClick = () => {
+    this.#handleDataChange({...this.#point, isFavorite: !this.#point.isFavorite}, this.#destinations, this.#offers);
   };
 
   #handleFormSubmit = () => {
