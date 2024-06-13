@@ -76,7 +76,7 @@ export default class BoardPresenter {
     this.#pointsPresenter.set(point.id, pointPresenter);
   }
 
-  #renderPoits() {
+  #renderPoints() {
     this.#boardPoints.forEach((point) => {
       this.#renderPoint({point: point, destinations: this.#boardDestinations, offers: this.#boardOffers});
     });
@@ -101,6 +101,6 @@ export default class BoardPresenter {
     this.#renderSort();
     this.#renderPointsList();
 
-    this.#renderPoits();
+    this.#renderPoints();
   }
 }
