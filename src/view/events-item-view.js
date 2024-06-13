@@ -16,7 +16,7 @@ function createOffers(array) {
 }
 
 function createEventsItemTemplate(point, arrayDestinations, arrayOffers) {
-  const { type = '', destination = '', dateFrom = '', dateTo = '', basePrice = '', isFavorite = '', offers = '' } = point;
+  const { type, destination = '', dateFrom = '', dateTo = '', basePrice = '', isFavorite = '', offers = [] } = point;
   const date = humanizePointDate(dateFrom);
   const dateTimeFrom = humanizePointDateTime(dateFrom);
   const dateTimeTo = humanizePointDateTime(dateTo);
@@ -26,7 +26,7 @@ function createEventsItemTemplate(point, arrayDestinations, arrayOffers) {
   const duration = humanizePointDuration(dateFrom, dateTo);
   const matchingDestinations = arrayDestinations.filter((element) => destination === element.id)[0].name;
   const matchingOffers = arrayOffers.reduce((acc, currentValue) => {
-    if (currentValue.type === point.type) {
+    if (point.type && currentValue.type === point.type) {
       return [...acc, ...currentValue.offers.filter((o) => offers.includes(o.id))];
     }
     return acc;
@@ -75,16 +75,20 @@ export default class EventsItemView extends AbstractView {
   #destinations = null;
   #offers = null;
   #handleEditClick = null;
+  #handleFavoriteClick = null;
 
-  constructor({point, destinations, offers, onEditClick}) {
+  constructor({point, destinations, offers, onEditClick, onFavoriteClick}) {
     super();
     this.#point = point;
     this.#destinations = destinations;
     this.#offers = offers;
     this.#handleEditClick = onEditClick;
+    this.#handleFavoriteClick = onFavoriteClick;
 
     this.element.querySelector('.event__rollup-btn')
       .addEventListener('click', this.#editClickHandler);
+    this.element.querySelector('.event__favorite-btn')
+      .addEventListener('click', this.#favoriteClickHandler);
   }
 
   get template() {
@@ -94,5 +98,10 @@ export default class EventsItemView extends AbstractView {
   #editClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleEditClick();
+  };
+
+  #favoriteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFavoriteClick();
   };
 }

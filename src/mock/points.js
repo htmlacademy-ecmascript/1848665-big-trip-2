@@ -1,8 +1,8 @@
 import {getRandomArrayElement} from '../utils.js';
+import {nanoid} from 'nanoid';
 
 const mockPoints = [
   {
-    id: '11a11111-111a-1a1a-a111-11aaa1a1111a',
     basePrice: 250,
     dateFrom: '2024-05-04T16:30:00.845Z',
     dateTo: '2024-05-04T21:30:00.375Z',
@@ -14,7 +14,6 @@ const mockPoints = [
     type: 'train'
   },
   {
-    id: 'b2b22222-222b-2b2b-b222-22bbb2b2222b',
     basePrice: 350,
     dateFrom: '2024-05-12T15:30:00.845Z',
     dateTo: '2024-05-12T17:30:00.375Z',
@@ -27,7 +26,6 @@ const mockPoints = [
     type: 'sightseeing'
   },
   {
-    id: 'e3e33333-333e-3e3e-e333-33eee3e3333e',
     basePrice: 200,
     dateFrom: '2024-05-12T15:30:00.845Z',
     dateTo: '2024-05-12T17:30:00.375Z',
@@ -39,7 +37,6 @@ const mockPoints = [
     type: 'drive'
   },
   {
-    id: 'f4f44444-444f-4f4f-f444-44fff4f4444f',
     basePrice: 100,
     dateFrom: '2024-05-14T13:00:00.845Z',
     dateTo: '2024-05-14T14:30:00.375Z',
@@ -49,7 +46,6 @@ const mockPoints = [
     type: 'restaurant'
   },
   {
-    id: 'k5k55555-555k-5k5k-k555-55kkk5k5555k',
     basePrice: 300,
     dateFrom: '2024-05-17T18:00:00.845Z',
     dateTo: '2024-05-17T19:30:00.375Z',
@@ -62,6 +58,11 @@ const mockPoints = [
   },
 ];
 
-const getRandomPoint = () => getRandomArrayElement(mockPoints);
+function getRandomPoint() {
+  return {
+    id: nanoid(),
+    ...getRandomArrayElement(mockPoints),
+  };
+}
 
 export {getRandomPoint};
