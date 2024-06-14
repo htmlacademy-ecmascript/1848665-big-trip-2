@@ -1,4 +1,4 @@
-import {updateItem} from '../utils.js';
+import {updateItem, sortByDuration, sortByPrice} from '../utils.js';
 import {RenderPosition, render} from '../framework/render.js';
 import TripInfoView from '../view/trip-info-view.js';
 import FiltersView from '../view/filters-view.js';
@@ -6,6 +6,7 @@ import SortView from '../view/sort-view.js';
 import EventsListView from '../view/events-list-view.js';
 import EventsMessageView from '../view/events-message-view.js';
 import PointPresenter from './point-presenter.js';
+import {SortType} from '../const.js';
 
 export default class BoardPresenter {
   #tripInfoContainer = null;
@@ -13,12 +14,14 @@ export default class BoardPresenter {
   #boardContainer = null;
   #sortingModel = null;
   #filtersModel = null;
+  #defaultSortedPoint = [];
   #pointsModel = null;
 
   #boardPoints = [];
   #boardDestinations = [];
   #boardOffers = [];
   #pointsPresenter = new Map();
+  #currentSortType = SortType.DAY;
   #sortComponent = null;
   #filtersComponent = null;
 
@@ -37,21 +40,49 @@ export default class BoardPresenter {
 
   init() {
     this.#boardPoints = [...this.#pointsModel.points];
+    this.#defaultSortedPoint = [...this.#boardPoints];
     this.#boardDestinations = [...this.#pointsModel.destinations];
     this.#boardOffers = [...this.#pointsModel.offers];
-    this.#sortComponent = new SortView({sortingModel: this.#sortingModel});
+    this.#sortComponent = new SortView({sortingModel: this.#sortingModel, onSortTypeChange: this.#handleClickSort});
     this.#filtersComponent = new FiltersView({filtersModel: this.#filtersModel});
 
     this.#renderBoard();
   }
 
+
   #handlePointChange = (updatedPoint) => {
     this.#boardPoints = updateItem(this.#boardPoints, updatedPoint);
+    this.#defaultSortedPoint = updateItem(this.#defaultSortedPoint, updatedPoint);
     this.#pointsPresenter.get(updatedPoint.id).init({point: updatedPoint, destinations:this.#boardDestinations, offers: this.#boardOffers});
   };
 
   #handleModeChange = () => {
     this.#pointsPresenter.forEach((presenter) => presenter.resetView());
+  };
+
+  #sortTasks = (sortType) => {
+    switch (sortType) {
+      case SortType.DAY:
+        this.#boardPoints = [...this.#defaultSortedPoint];
+        break;
+      case SortType.TIME:
+        this.#boardPoints.sort(sortByDuration);
+        break;
+      case SortType.PRICE:
+        this.#boardPoints.sort(sortByPrice);
+        break;
+    }
+    this.#currentSortType = sortType;
+  };
+
+  #handleClickSort = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+
+    this.#sortTasks(sortType);
+    this.#clearPointsList();
+    this.#renderPoints();
   };
 
   #renderFilters() {

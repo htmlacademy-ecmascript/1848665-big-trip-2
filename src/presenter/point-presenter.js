@@ -93,7 +93,7 @@ export default class PointPresenter {
     document.addEventListener('keydown', this.#escKeyDownHandler);
   };
 
-  #destroy() {
+  destroy() {
     remove(this.#pointComponent);
     remove(this.#formPointComponent);
   }

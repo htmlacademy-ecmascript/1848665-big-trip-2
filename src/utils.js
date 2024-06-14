@@ -7,6 +7,22 @@ const DATE_TIME_FORM_POINTS = 'YY/MM/DD HH:mm';
 const MONTH_DATE_FORMAT = 'MMM DD';
 const TIME_FORMAT = 'HH:mm';
 
+function sortByDuration(pointA, pointB) {
+  const durationPointA = getPointDuration(pointA);
+  const durationPointB = getPointDuration(pointB);
+  return durationPointB - durationPointA;
+}
+
+function getPointDuration(point) {
+  return dayjs(point.dateTo).diff(dayjs(point.dateFrom));
+}
+
+function sortByPrice(pointA, pointB) {
+  const pricePointA = pointA.basePrice;
+  const pricePointB = pointB.basePrice;
+  return pricePointB - pricePointA;
+}
+
 function getRandomNumber() {
   return Math.floor(Math.random() * 10) + 1;
 }
@@ -63,4 +79,4 @@ function isPointFavorite(isFavorite) {
   return isFavorite ? 'event__favorite-btn--active' : '';
 }
 
-export {getRandomNumber, getRandomArrayElement, updateItem,humanizePointDate, humanizePointDateTime, humanizePointDateTimeFormPoints, humanizePointMonthDate, humanizePointTime, humanizePointDuration, isPointFavorite };
+export {getRandomNumber, getRandomArrayElement, updateItem,humanizePointDate, humanizePointDateTime, humanizePointDateTimeFormPoints, humanizePointMonthDate, humanizePointTime, humanizePointDuration, isPointFavorite, sortByDuration, sortByPrice};

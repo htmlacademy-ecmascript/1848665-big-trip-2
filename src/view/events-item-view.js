@@ -16,7 +16,7 @@ function createOffers(array) {
 }
 
 function createEventsItemTemplate(point, arrayDestinations, arrayOffers) {
-  const { type, destination = '', dateFrom = '', dateTo = '', basePrice = '', isFavorite = '', offers = [] } = point;
+  const { type = '', destination = '', dateFrom = '', dateTo = '', basePrice = '', isFavorite = '', offers = [] } = point;
   const date = humanizePointDate(dateFrom);
   const dateTimeFrom = humanizePointDateTime(dateFrom);
   const dateTimeTo = humanizePointDateTime(dateTo);
