@@ -55,10 +55,10 @@ export default class PointPresenter {
       return;
     }
 
-    if (this.#eventsListComponent.element.contains(prevPointComponent.element)) {
+    if (this.#mode === Mode.DEFAULT) {
       replace(this.#pointComponent, prevPointComponent);
     }
-    if (this.#eventsListComponent.element.contains(prevFormPointComponent.element)) {
+    if (this.#mode === Mode.EDITING) {
       replace(this.#formPointComponent, prevFormPointComponent);
     }
 
@@ -93,7 +93,7 @@ export default class PointPresenter {
     document.addEventListener('keydown', this.#escKeyDownHandler);
   };
 
-  #destroy() {
+  destroy() {
     remove(this.#pointComponent);
     remove(this.#formPointComponent);
   }
