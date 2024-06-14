@@ -7,7 +7,7 @@ const pointTypes = [
   'Flight',
   'Check-in',
   'Sightseeing',
-  'Restaurant'
+  'Restaurant',
 ];
 
 const SortType = {
@@ -16,4 +16,12 @@ const SortType = {
   PRICE: 'sort-price',
 };
 
-export {pointTypes, SortType};
+const disabledTypes = [
+  'Event',
+  'Offer',
+];
+const checkedTypes = [
+  'Day',
+];
+
+export {pointTypes, SortType, disabledTypes, checkedTypes};

@@ -1,16 +1,21 @@
 import AbstractView from '../framework/view/abstract-view.js';
-
-const disabledTypes = ['Event', 'Offer'];
+import {disabledTypes, checkedTypes} from '../const.js';
 
 function createSorting(arraySorting) {
   return arraySorting.map((element) => {
     const sortingTitle = element.title;
-    const isDisabled = disabledTypes.includes(element.title) ? 'disabled' : '';
-    const isChecked = element.title === 'Day' ? 'checked' : '';
     const sortingValue = element.value;
+
+    let sortingState = '';
+    if (disabledTypes.includes(element.title)) {
+      sortingState = 'disabled';
+    } else if (checkedTypes.includes(element.title)) {
+      sortingState = 'checked';
+    }
+
     return (
       `<div class="trip-sort__item trip-sort__item--${sortingValue}">
-        <input id="sort-${sortingValue}" class="trip-sort__input visually-hidden" type="radio" name="trip-sort" value="sort-${sortingValue}" ${isChecked} ${isDisabled}>
+        <input id="sort-${sortingValue}" class="trip-sort__input visually-hidden" type="radio" name="trip-sort" value="sort-${sortingValue}" ${sortingState}>
         <label class="trip-sort__btn" for="sort-${sortingValue}">${sortingTitle}</label>
       </div>`
     );
