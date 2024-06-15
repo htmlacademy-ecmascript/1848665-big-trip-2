@@ -1,5 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import {getRandomNumber, humanizePointDateTimeFormPoints} from '../utils.js';
+import {DateFormats} from '../const.js';
+import {getRandomNumber, humanizePointDate} from '../utils.js';
 
 function createOffers(array, offers, type) {
   const typeOffers = array.reduce((acc, currentValue) => {
@@ -81,8 +82,8 @@ function createFormPointTemplate(point, arrayDestinations, arrayOffers) {
   const { basePrice, dateFrom, dateTo, destination, offers, type } = point;
   const pointDestination = arrayDestinations.filter((element) => destination === element.id)[0];
   const destinationTitle = pointDestination.name;
-  const dateTimeFrom = humanizePointDateTimeFormPoints(dateFrom);
-  const dateTimeTo = humanizePointDateTimeFormPoints(dateTo);
+  const dateTimeFrom = humanizePointDate(dateFrom, DateFormats.DATE_TIME_FORM_POINTS);
+  const dateTimeTo = humanizePointDate(dateTo, DateFormats.DATE_TIME_FORM_POINTS);
 
 
   return (

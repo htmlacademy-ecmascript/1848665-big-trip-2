@@ -16,12 +16,13 @@ const SortType = {
   PRICE: 'sort-price',
 };
 
-const disabledTypes = [
-  'Event',
-  'Offer',
-];
-const checkedTypes = [
-  'Day',
-];
+const DateFormats = {
+  DATE_FORMAT: 'YYYY-MM-DD',
+  DATE_TIME_FORMAT: 'YYYY-MM-DDTHH:mm',
+  DATE_TIME_FORM_POINTS: 'YY/MM/DD HH:mm',
+  MONTH_DATE_FORMAT: 'MMM DD',
+  TIME_FORMAT: 'HH:mm',
+};
 
-export {pointTypes, SortType, disabledTypes, checkedTypes};
+
+export {pointTypes, SortType, DateFormats};

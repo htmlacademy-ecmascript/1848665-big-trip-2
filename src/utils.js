@@ -1,11 +1,13 @@
 import dayjs from 'dayjs';
 
-// Определяют форматы даты и времени
-const DATE_FORMAT = 'YYYY-MM-DD';
-const DATE_TIME_FORMAT = 'YYYY-MM-DDTHH:mm';
-const DATE_TIME_FORM_POINTS = 'YY/MM/DD HH:mm';
-const MONTH_DATE_FORMAT = 'MMM DD';
-const TIME_FORMAT = 'HH:mm';
+// Форматирует объекты даты в строку в указанном формате
+function humanizePointDate(date, format) {
+  return date ? dayjs(date).format(format) : '';
+}
+
+function sortByDate(pointA, pointB) {
+  return dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
+}
 
 function sortByDuration(pointA, pointB) {
   const durationPointA = getPointDuration(pointA);
@@ -36,28 +38,6 @@ function updateItem(items, update) {
   return items.map((item) => (item.id === update.id ? update : item));
 }
 
-// Форматирует объекты даты в строку в указанном формате
-function humanizePointDate(date) {
-  return date ? dayjs(date).format(DATE_FORMAT) : '';
-}
-
-function humanizePointDateTime(date) {
-  return date ? dayjs(date).format(DATE_TIME_FORMAT) : '';
-}
-
-function humanizePointDateTimeFormPoints(date) {
-  return date ? dayjs(date).format(DATE_TIME_FORM_POINTS) : '';
-}
-
-function humanizePointMonthDate(date) {
-  return date ? dayjs(date).format(MONTH_DATE_FORMAT) : '';
-}
-
-function humanizePointTime(date) {
-  return date ? dayjs(date).format(TIME_FORMAT) : '';
-}
-
-
 // Форматирует длительность между двумя датами в строку времени в указанном формате
 function humanizePointDuration(dateFrom, dateTo) {
   if (dateFrom && dateTo) {
@@ -79,4 +59,14 @@ function isPointFavorite(isFavorite) {
   return isFavorite ? 'event__favorite-btn--active' : '';
 }
 
-export {getRandomNumber, getRandomArrayElement, updateItem,humanizePointDate, humanizePointDateTime, humanizePointDateTimeFormPoints, humanizePointMonthDate, humanizePointTime, humanizePointDuration, isPointFavorite, sortByDuration, sortByPrice};
+export {
+  getRandomNumber,
+  getRandomArrayElement,
+  humanizePointDate,
+  humanizePointDuration,
+  updateItem,
+  isPointFavorite,
+  sortByDate,
+  sortByDuration,
+  sortByPrice
+};
