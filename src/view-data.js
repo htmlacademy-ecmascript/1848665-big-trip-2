@@ -1,3 +1,14 @@
+/**
+ * @typedef {Object} SortItem
+ * @property {string} title - The sorting value title.
+ * @property {string} value - The sorting value.
+ * @property {boolean} defaultChecked - The default checked state.
+ * @property {boolean} disabled - The disabled state.
+ */
+
+/**
+ * @type {SortItem[]}
+ */
 const sortItems = [
   {
     title: 'Day',
@@ -31,6 +42,16 @@ const sortItems = [
   },
 ];
 
+/**
+ * @typedef {Object} FilterItem
+ * @property {string} title - The filtering value title.
+ * @property {string} value - The filtering value.
+ * @property {boolean} defaultChecked - The default checked state.
+ */
+
+/**
+ * @type {FilterItem[]}
+ */
 const filterItems = [
   {
     title: 'Everything',

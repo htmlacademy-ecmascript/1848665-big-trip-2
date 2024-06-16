@@ -1,6 +1,10 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import {filterItems} from '../view-data.js';
 
+/**
+ * @param {import('../view-data.js').FilterItem[]} items
+ * @returns {string}
+ */
 function createFilters(items) {
   return items.map((element) => {
     const isChecked = element.defaultChecked ? 'checked' : '';
@@ -13,6 +17,10 @@ function createFilters(items) {
   }).join('');
 }
 
+/**
+ * @param {import('../view-data.js').FilterItem[]} items
+ * @returns {string}
+ */
 function createFiltersTemplate(items) {
   return (
     `<form class="trip-filters" action="#" method="get">

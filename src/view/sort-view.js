@@ -1,6 +1,11 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import {sortItems} from '../view-data.js';
 
+
+/**
+ * @param {import('../view-data.js').SortItem[]} items
+ * @returns {string}
+ */
 function createSorting(items) {
   return items.map((element) => {
     const isDisabled = element.disabled ? 'disabled' : '';
@@ -14,6 +19,10 @@ function createSorting(items) {
   }).join('');
 }
 
+/**
+ * @param {import('../view-data.js').SortItem[]} items
+ * @returns {string}
+ */
 function createSortTemplate(items) {
   return (
     `<form class="trip-events__trip-sort trip-sort" action="#" method="get">
