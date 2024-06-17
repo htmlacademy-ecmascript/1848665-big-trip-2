@@ -1,6 +1,6 @@
 import {render,replace, remove} from '../framework/render.js';
 import EventsItemView from '../view/events-item-view.js';
-import FormPointView from '../view/form-point-view.js';
+import PointEditView from '../view/point-edit-view.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -42,7 +42,7 @@ export default class PointPresenter {
       onFavoriteClick: this.#handleFavoriteClick,
     });
 
-    this.#formPointComponent = new FormPointView({
+    this.#formPointComponent = new PointEditView({
       point: this.#point,
       destinations: this.#destinations,
       offers: this.#offers,

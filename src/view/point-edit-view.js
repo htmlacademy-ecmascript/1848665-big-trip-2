@@ -1,4 +1,4 @@
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {DateFormats} from '../const.js';
 import {getRandomNumber, humanizePointDate} from '../utils.js';
 
@@ -11,17 +11,15 @@ function createOffers(array, offers, type) {
   }, []);
 
   return typeOffers.map((element) => {
-    const offerTitle = element.title;
-    const offerPrice = element.price;
     const isChecked = offers.includes(element.id);
 
     return (
       `<div class="event__offer-selector">
         <input class="event__offer-checkbox visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${isChecked ? 'checked' : ''}>
         <label class="event__offer-label" for="event-offer-luggage-1">
-          <span class="event__offer-title">${offerTitle}</span>
+          <span class="event__offer-title">${element.title}</span>
           &plus;&euro;&nbsp;
-          <span class="event__offer-price">${offerPrice}</span>
+          <span class="event__offer-price">${element.price}</span>
         </label>
       </div>`
     );
@@ -57,13 +55,7 @@ function createDestinationPictures(pointDestination) {
 }
 
 function createDestinationPicture(pointDestination) {
-  return pointDestination.pictures.map((element) => {
-    const pictureSrc = element.src;
-    const pictureDescription = element.alt;
-    return (
-      `<img class="event__photo" src="${pictureSrc}${getRandomNumber()}" alt="${pictureDescription}">`
-    );
-  }).join('');
+  return pointDestination.pictures.map((element) => `<img class="event__photo" src="${element.src}${getRandomNumber()}" alt="${element.alt}">`).join('');
 }
 
 function createDestination(pointDestination) {
@@ -81,7 +73,6 @@ function createDestination(pointDestination) {
 function createFormPointTemplate(point, arrayDestinations, arrayOffers) {
   const { basePrice, dateFrom, dateTo, destination, offers, type } = point;
   const pointDestination = arrayDestinations.filter((element) => destination === element.id)[0];
-  const destinationTitle = pointDestination.name;
   const dateTimeFrom = humanizePointDate(dateFrom, DateFormats.DATE_TIME_FORM_POINTS);
   const dateTimeTo = humanizePointDate(dateTo, DateFormats.DATE_TIME_FORM_POINTS);
 
@@ -142,7 +133,7 @@ function createFormPointTemplate(point, arrayDestinations, arrayOffers) {
             <label class="event__label event__type-output" for="event-destination-1">
               ${type}
             </label>
-            <input class="event__input event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationTitle}" list="destination-list-1">
+            <input class="event__input event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${pointDestination.name}" list="destination-list-1">
             <datalist id="destination-list-1">
               <option value="Amsterdam"></option>
               <option value="Geneva"></option>
@@ -178,8 +169,7 @@ function createFormPointTemplate(point, arrayDestinations, arrayOffers) {
   );
 }
 
-export default class FormPointView extends AbstractView {
-  #point = null;
+export default class PointEditView extends AbstractStatefulView {
   #destinations = null;
   #offers = null;
   #handleFormSubmit = null;
@@ -187,7 +177,7 @@ export default class FormPointView extends AbstractView {
 
   constructor({point, destinations, offers, onFormSubmit, onFormArrowClick}) {
     super();
-    this.#point = point;
+    this._setState(PointEditView.parsePointToState(point));
     this.#destinations = destinations;
     this.#offers = offers;
     this.#handleFormSubmit = onFormSubmit;
@@ -198,8 +188,17 @@ export default class FormPointView extends AbstractView {
       .addEventListener('click', this.#formClickHandler);
   }
 
+  static parsePointToState(point) {
+    return {...point};
+  }
+
+  static parseStateToPoint(state) {
+    const point = {...state};
+    return point;
+  }
+
   get template() {
-    return createFormPointTemplate(this.#point, this.#destinations, this.#offers);
+    return createFormPointTemplate(this._state, this.#destinations, this.#offers);
   }
 
   #formSubmitHandler = (evt) => {
