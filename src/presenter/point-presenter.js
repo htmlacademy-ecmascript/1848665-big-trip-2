@@ -83,9 +83,10 @@ export default class PointPresenter {
     this.#handleDataChange({...this.#point, isFavorite: !this.#point.isFavorite}, this.#destinations, this.#offers);
   };
 
-  #handleFormSubmit = () => {
+  #handleFormSubmit = (point) => {
     this.#replaceFormToCard();
     document.addEventListener('keydown', this.#escKeyDownHandler);
+    this.#handleDataChange({...point}, this.#destinations, this.#offers);
   };
 
   #handleFormArrowClick = () => {
@@ -111,6 +112,7 @@ export default class PointPresenter {
 
   resetView() {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#formPointComponent.reset(this.#point);
       this.#replaceFormToCard();
     }
   }

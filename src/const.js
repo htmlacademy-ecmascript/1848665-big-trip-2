@@ -1,13 +1,40 @@
 const pointTypes = [
-  'Taxi',
-  'Bus',
-  'Train',
-  'Ship',
-  'Drive',
-  'Flight',
-  'Check-in',
-  'Sightseeing',
-  'Restaurant',
+  {
+    title: 'Taxi',
+    value: 'taxi',
+  },
+  {
+    title: 'Bus',
+    value: 'bus',
+  },
+  {
+    title: 'Train',
+    value: 'train',
+  },
+  {
+    title: 'Ship',
+    value: 'ship',
+  },
+  {
+    title: 'Drive',
+    value: 'drive',
+  },
+  {
+    title: 'Flight',
+    value: 'flight',
+  },
+  {
+    title: 'Check-in',
+    value: 'check-in',
+  },
+  {
+    title: 'Sightseeing',
+    value: 'sightseeing',
+  },
+  {
+    title: 'Restaurant',
+    value: 'restaurant',
+  },
 ];
 
 const SortType = {
