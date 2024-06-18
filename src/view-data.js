@@ -75,4 +75,52 @@ const filterItems = [
   },
 ];
 
-export {sortItems, filterItems};
+/**
+ * @typedef {Object} PointType
+ * @property {string} title - The type point title.
+ * @property {string} value - The type point value.
+ */
+
+/**
+ * @type {PointType[]}
+ */
+const pointTypes = [
+  {
+    title: 'Taxi',
+    value: 'taxi',
+  },
+  {
+    title: 'Bus',
+    value: 'bus',
+  },
+  {
+    title: 'Train',
+    value: 'train',
+  },
+  {
+    title: 'Ship',
+    value: 'ship',
+  },
+  {
+    title: 'Drive',
+    value: 'drive',
+  },
+  {
+    title: 'Flight',
+    value: 'flight',
+  },
+  {
+    title: 'Check-in',
+    value: 'check-in',
+  },
+  {
+    title: 'Sightseeing',
+    value: 'sightseeing',
+  },
+  {
+    title: 'Restaurant',
+    value: 'restaurant',
+  },
+];
+
+export {sortItems, filterItems, pointTypes};

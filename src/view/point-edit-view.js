@@ -1,5 +1,6 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import {pointTypes, DateFormats} from '../const.js';
+import {DateFormat} from '../const.js';
+import {pointTypes} from '../view-data.js';
 import {getRandomNumber, humanizePointDate} from '../utils.js';
 
 function createOffers(array, offers, type) {
@@ -97,8 +98,8 @@ function createTypeList(array, checkedType) {
 function createFormPointTemplate(point, arrayDestinations, arrayOffers) {
   const { basePrice, dateFrom, dateTo, destination, offers, type } = point;
   const pointDestination = arrayDestinations.filter((element) => destination === element.id)[0];
-  const dateTimeFrom = humanizePointDate(dateFrom, DateFormats.DATE_TIME_FORM_POINTS);
-  const dateTimeTo = humanizePointDate(dateTo, DateFormats.DATE_TIME_FORM_POINTS);
+  const dateTimeFrom = humanizePointDate(dateFrom, DateFormat.DATE_TIME_FORM_POINTS);
+  const dateTimeTo = humanizePointDate(dateTo, DateFormat.DATE_TIME_FORM_POINTS);
 
 
   return (
@@ -176,8 +177,7 @@ export default class PointEditView extends AbstractStatefulView {
   }
 
   static parseStateToPoint(state) {
-    const point = {...state};
-    return point;
+    return {...state};
   }
 
   get template() {
@@ -192,7 +192,7 @@ export default class PointEditView extends AbstractStatefulView {
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formClickHandler);
 
-    this.element.querySelector('.event__input--destination').addEventListener('input', this.#destinationClickHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('input', this.#destinationInputHandler);
     this.element.querySelectorAll('.event__type-input').forEach((input) => {
       input.addEventListener('change', this.#typeChangeHandler);
     });
@@ -208,9 +208,10 @@ export default class PointEditView extends AbstractStatefulView {
     this.#handleFormArrowClick();
   };
 
-  #destinationClickHandler = (evt) => {
+  #destinationInputHandler = (evt) => {
     evt.preventDefault();
-    const options = document.querySelectorAll('option');
+    const datalist = document.getElementById('destination-list-1');
+    const options = datalist.querySelectorAll('option');
     let matched = false;
 
     for (const option of options) {
@@ -223,8 +224,9 @@ export default class PointEditView extends AbstractStatefulView {
     if (matched) {
       const destination = this.#destinations.find((element) => element.name === evt.target.value);
       if (destination) {
-        this._setState({
+        this.updateElement({
           destination: destination.id,
+          offers: [],
         });
       }
     }

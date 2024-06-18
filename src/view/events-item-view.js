@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import {DateFormats} from '../const.js';
+import {DateFormat} from '../const.js';
 import {humanizePointDate, humanizePointDuration, isPointFavorite} from '../utils.js';
 
 function createOffers(array) {
@@ -18,12 +18,12 @@ function createOffers(array) {
 
 function createEventsItemTemplate(point, arrayDestinations, arrayOffers) {
   const { type = '', destination = '', dateFrom = '', dateTo = '', basePrice = '', isFavorite = '', offers = [] } = point;
-  const date = humanizePointDate(dateFrom, DateFormats.DATE_FORMAT);
-  const dateDayFrom = humanizePointDate(dateFrom, DateFormats.DATE_TIME_FORMAT);
-  const dateDayTo = humanizePointDate(dateTo, DateFormats.DATE_TIME_FORMAT);
-  const dateMonth = humanizePointDate(dateFrom, DateFormats.MONTH_DATE_FORMAT);
-  const dateTimeFrom = humanizePointDate(dateFrom, DateFormats.TIME_FORMAT);
-  const dateTimeTo = humanizePointDate(dateTo, DateFormats.TIME_FORMAT);
+  const date = humanizePointDate(dateFrom, DateFormat.DATE_FORMAT);
+  const dateDayFrom = humanizePointDate(dateFrom, DateFormat.DATE_TIME_FORMAT);
+  const dateDayTo = humanizePointDate(dateTo, DateFormat.DATE_TIME_FORMAT);
+  const dateMonth = humanizePointDate(dateFrom, DateFormat.MONTH_DATE_FORMAT);
+  const dateTimeFrom = humanizePointDate(dateFrom, DateFormat.TIME_FORMAT);
+  const dateTimeTo = humanizePointDate(dateTo, DateFormat.TIME_FORMAT);
   const duration = humanizePointDuration(dateFrom, dateTo);
 
   const matchingDestinations = arrayDestinations.filter((element) => destination === element.id)[0].name;
