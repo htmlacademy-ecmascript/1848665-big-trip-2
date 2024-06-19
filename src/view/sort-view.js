@@ -1,55 +1,51 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import {disabledTypes, checkedTypes} from '../const.js';
+import {sortItems} from '../view-data.js';
 
-function createSorting(arraySorting) {
-  return arraySorting.map((element) => {
-    const sortingTitle = element.title;
-    const sortingValue = element.value;
 
-    let sortingState = '';
-    if (disabledTypes.includes(element.title)) {
-      sortingState = 'disabled';
-    } else if (checkedTypes.includes(element.title)) {
-      sortingState = 'checked';
-    }
-
+/**
+ * @param {import('../view-data.js').SortItem[]} items
+ * @returns {string}
+ */
+function createSorting(items) {
+  return items.map((element) => {
+    const isDisabled = element.disabled ? 'disabled' : '';
+    const isChecked = element.defaultChecked ? 'checked' : '';
     return (
-      `<div class="trip-sort__item trip-sort__item--${sortingValue}">
-        <input id="sort-${sortingValue}" class="trip-sort__input visually-hidden" type="radio" name="trip-sort" value="sort-${sortingValue}" ${sortingState}>
-        <label class="trip-sort__btn" for="sort-${sortingValue}">${sortingTitle}</label>
+      `<div class="trip-sort__item trip-sort__item--${element.value}">
+        <input id="sort-${element.value}" class="trip-sort__input visually-hidden" type="radio" name="trip-sort" value="sort-${element.value}" ${isDisabled} ${isChecked}>
+        <label class="trip-sort__btn" for="sort-${element.value}">${element.title}</label>
       </div>`
     );
   }).join('');
 }
 
-function createSortTemplate(sorting) {
-  const arraySorting = sorting.sorting;
+/**
+ * @param {import('../view-data.js').SortItem[]} items
+ * @returns {string}
+ */
+function createSortTemplate(items) {
   return (
     `<form class="trip-events__trip-sort trip-sort" action="#" method="get">
-      ${createSorting(arraySorting)}
+      ${createSorting(items)}
     </form>`
   );
 }
 
 export default class SortView extends AbstractView {
-  #sortingModel = null;
+  #sortItems = sortItems;
   #handleSortTypeChange = null;
 
-  constructor({sortingModel, onSortTypeChange}) {
+  constructor({onSortTypeChange}) {
     super();
-    this.#sortingModel = sortingModel;
     this.#handleSortTypeChange = onSortTypeChange;
-    this.element.addEventListener('click', this.#sortTypeChangeHandler);
+    this.element.addEventListener('change', this.#sortTypeChangeHandler);
   }
 
   get template() {
-    return createSortTemplate(this.#sortingModel);
+    return createSortTemplate(this.#sortItems);
   }
 
   #sortTypeChangeHandler = (evt) => {
-    if (evt.target.tagName !== 'INPUT') {
-      return;
-    }
     this.#handleSortTypeChange(evt.target.value);
   };
 }

@@ -1,4 +1,4 @@
-import {updateItem, sortByDuration, sortByPrice} from '../utils.js';
+import {updateItem, sortByDate, sortByDuration, sortByPrice} from '../utils.js';
 import {RenderPosition, render} from '../framework/render.js';
 import TripInfoView from '../view/trip-info-view.js';
 import FiltersView from '../view/filters-view.js';
@@ -12,9 +12,6 @@ export default class BoardPresenter {
   #tripInfoContainer = null;
   #filtersContainer = null;
   #boardContainer = null;
-  #sortingModel = null;
-  #filtersModel = null;
-  #defaultSortedPoint = [];
   #pointsModel = null;
 
   #boardPoints = [];
@@ -29,22 +26,20 @@ export default class BoardPresenter {
   #tripInfoComponent = new TripInfoView();
   #noPointsComponent = new EventsMessageView();
 
-  constructor({tripInfoContainer, filtersContainer, boardContainer, sortingModel, filtersModel, pointsModel}) {
+  constructor({tripInfoContainer, filtersContainer, boardContainer, pointsModel}) {
     this.#tripInfoContainer = tripInfoContainer;
     this.#filtersContainer = filtersContainer;
     this.#boardContainer = boardContainer;
-    this.#sortingModel = sortingModel;
-    this.#filtersModel = filtersModel;
     this.#pointsModel = pointsModel;
   }
 
   init() {
     this.#boardPoints = [...this.#pointsModel.points];
-    this.#defaultSortedPoint = [...this.#boardPoints];
+    this.#sortTasks(this.#currentSortType);
     this.#boardDestinations = [...this.#pointsModel.destinations];
     this.#boardOffers = [...this.#pointsModel.offers];
-    this.#sortComponent = new SortView({sortingModel: this.#sortingModel, onSortTypeChange: this.#handleClickSort});
-    this.#filtersComponent = new FiltersView({filtersModel: this.#filtersModel});
+    this.#sortComponent = new SortView({onSortTypeChange: this.#handleClickSort});
+    this.#filtersComponent = new FiltersView();
 
     this.#renderBoard();
   }
@@ -52,7 +47,6 @@ export default class BoardPresenter {
 
   #handlePointChange = (updatedPoint) => {
     this.#boardPoints = updateItem(this.#boardPoints, updatedPoint);
-    this.#defaultSortedPoint = updateItem(this.#defaultSortedPoint, updatedPoint);
     this.#pointsPresenter.get(updatedPoint.id).init({point: updatedPoint, destinations:this.#boardDestinations, offers: this.#boardOffers});
   };
 
@@ -63,7 +57,7 @@ export default class BoardPresenter {
   #sortTasks = (sortType) => {
     switch (sortType) {
       case SortType.DAY:
-        this.#boardPoints = [...this.#defaultSortedPoint];
+        this.#boardPoints.sort(sortByDate);
         break;
       case SortType.TIME:
         this.#boardPoints.sort(sortByDuration);

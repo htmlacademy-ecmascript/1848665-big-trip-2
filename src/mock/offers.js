@@ -1,5 +1,13 @@
 export const mockOffers = [
   {
+    type: 'taxi',
+    offers: []
+  },
+  {
+    type: 'bus',
+    offers: []
+  },
+  {
     type: 'train',
     offers: [
       {
@@ -13,6 +21,10 @@ export const mockOffers = [
         price: 20
       },
     ]
+  },
+  {
+    type: 'ship',
+    offers: []
   },
   {
     type: 'drive',
@@ -33,6 +45,10 @@ export const mockOffers = [
         price: 50
       },
     ]
+  },
+  {
+    type: 'flight',
+    offers: []
   },
   {
     type: 'check-in',

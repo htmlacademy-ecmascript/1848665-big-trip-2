@@ -1,5 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import {humanizePointDate, humanizePointDateTime, humanizePointMonthDate, humanizePointTime, humanizePointDuration, isPointFavorite} from '../utils.js';
+import {DateFormat} from '../const.js';
+import {humanizePointDate, humanizePointDuration, isPointFavorite} from '../utils.js';
 
 function createOffers(array) {
   return array.map((element) => {
@@ -17,13 +18,14 @@ function createOffers(array) {
 
 function createEventsItemTemplate(point, arrayDestinations, arrayOffers) {
   const { type = '', destination = '', dateFrom = '', dateTo = '', basePrice = '', isFavorite = '', offers = [] } = point;
-  const date = humanizePointDate(dateFrom);
-  const dateTimeFrom = humanizePointDateTime(dateFrom);
-  const dateTimeTo = humanizePointDateTime(dateTo);
-  const dateMonth = humanizePointMonthDate(dateFrom);
-  const dataTimeFrom = humanizePointTime(dateFrom);
-  const dataTimeTo = humanizePointTime(dateTo);
+  const date = humanizePointDate(dateFrom, DateFormat.DATE_FORMAT);
+  const dateDayFrom = humanizePointDate(dateFrom, DateFormat.DATE_TIME_FORMAT);
+  const dateDayTo = humanizePointDate(dateTo, DateFormat.DATE_TIME_FORMAT);
+  const dateMonth = humanizePointDate(dateFrom, DateFormat.MONTH_DATE_FORMAT);
+  const dateTimeFrom = humanizePointDate(dateFrom, DateFormat.TIME_FORMAT);
+  const dateTimeTo = humanizePointDate(dateTo, DateFormat.TIME_FORMAT);
   const duration = humanizePointDuration(dateFrom, dateTo);
+
   const matchingDestinations = arrayDestinations.filter((element) => destination === element.id)[0].name;
   const matchingOffers = arrayOffers.reduce((acc, currentValue) => {
     if (point.type && currentValue.type === point.type) {
@@ -43,9 +45,9 @@ function createEventsItemTemplate(point, arrayDestinations, arrayOffers) {
         <h3 class="event__title">${type} ${matchingDestinations}</h3>
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="${dateTimeFrom}">${dataTimeFrom}</time>
+            <time class="event__start-time" datetime="${dateDayFrom}">${dateTimeFrom}</time>
             &mdash;
-            <time class="event__end-time" datetime="${dateTimeTo}">${dataTimeTo}</time>
+            <time class="event__end-time" datetime="${dateDayTo}">${dateTimeTo}</time>
           </p>
           <p class="event__duration">${duration}</p>
         </div>
