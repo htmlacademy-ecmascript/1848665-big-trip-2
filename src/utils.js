@@ -41,13 +41,20 @@ function humanizePointDate(date, format) {
 function humanizePointDuration(dateFrom, dateTo) {
   if (dateFrom && dateTo) {
     const duration = dayjs(dateTo).diff(dayjs(dateFrom), 'minute');
+    const days = Math.floor(duration / 1440);
+    const hours = Math.floor((duration % 1440) / 60);
+    const minutes = duration % 60;
 
-    if (duration >= 60) {
-      const hours = Math.floor(duration / 60);
-      const minute = duration % 60;
-      return `0${hours}H ${minute || '00'}M`;
+    if (days > 0) {
+      // Более суток
+      return `${days}D ${hours.toString().padStart(2, '0')}H ${minutes.toString().padStart(2, '0')}M`;
+    } else if (hours > 0) {
+      // Менее суток, но более часа
+      return `${hours.toString().padStart(2, '0')}H ${minutes.toString().padStart(2, '0')}M`;
+    } else {
+      // Менее часа
+      return `${minutes}M`;
     }
-    return `${duration}M`;
   }
   return '';
 }
