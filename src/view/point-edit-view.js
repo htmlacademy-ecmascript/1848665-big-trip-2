@@ -1,7 +1,9 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {DateFormat} from '../const.js';
 import {pointTypes} from '../view-data.js';
-import {getRandomNumber, humanizePointDate} from '../utils.js';
+import {getRandomNumber} from '../utils.js';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 
 function createOffers(array, offers, type) {
   const typeOffers = array.reduce((acc, currentValue) => {
@@ -98,9 +100,6 @@ function createTypeList(array, checkedType) {
 function createFormPointTemplate(point, arrayDestinations, arrayOffers) {
   const { basePrice, dateFrom, dateTo, destination, offers, type } = point;
   const pointDestination = arrayDestinations.filter((element) => destination === element.id)[0];
-  const dateTimeFrom = humanizePointDate(dateFrom, DateFormat.DATE_TIME_FORM_POINTS);
-  const dateTimeTo = humanizePointDate(dateTo, DateFormat.DATE_TIME_FORM_POINTS);
-
 
   return (
     `<li class="trip-events__item">
@@ -128,10 +127,10 @@ function createFormPointTemplate(point, arrayDestinations, arrayOffers) {
           </div>
           <div class="event__field-group event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">From</label>
-            <input class="event__input event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateTimeFrom}">
+            <input class="event__input event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom}">
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">To</label>
-            <input class="event__input event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTimeTo}">
+            <input class="event__input event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo}">
           </div>
           <div class="event__field-group event__field-group--price">
             <label class="event__label" for="event-price-1">
@@ -160,6 +159,8 @@ export default class PointEditView extends AbstractStatefulView {
   #offers = null;
   #handleFormSubmit = null;
   #handleFormArrowClick = null;
+  #dateFromDatapicker = null;
+  #dateToDatapicker = null;
 
   constructor({point, destinations, offers, onFormSubmit, onFormArrowClick}) {
     super();
@@ -184,6 +185,18 @@ export default class PointEditView extends AbstractStatefulView {
     return createFormPointTemplate(this._state, this.#destinations, this.#offers);
   }
 
+  removeElement() {
+    super.removeElement();
+    if (this.#dateFromDatapicker) {
+      this.#dateFromDatapicker.destroy();
+      this.#dateFromDatapicker = null;
+    }
+    if (this.#dateToDatapicker) {
+      this.#dateToDatapicker.destroy();
+      this.dateToDatapicker = null;
+    }
+  }
+
   reset(point) {
     this.updateElement(PointEditView.parsePointToState(point));
   }
@@ -196,7 +209,47 @@ export default class PointEditView extends AbstractStatefulView {
     this.element.querySelectorAll('.event__type-input').forEach((input) => {
       input.addEventListener('change', this.#typeChangeHandler);
     });
+    this.#setDateFromDatapicker();
+    this.#setDateToDatapicker();
   }
+
+  #setDateFromDatapicker() {
+    this.#dateFromDatapicker = flatpickr(
+      this.element.querySelector('#event-start-time-1'),
+      {
+        dateFormat: DateFormat.DATE_TIME_FORM_POINTS,
+        defaultDate: this._state.dateFrom,
+        onChange: this.#dueDateFromChangeHandler,
+        maxDate: this._state.dateTo || 'today',
+      },
+    );
+  }
+
+  #setDateToDatapicker() {
+    this.#dateToDatapicker = flatpickr(
+      this.element.querySelector('#event-end-time-1'),
+      {
+        dateFormat: DateFormat.DATE_TIME_FORM_POINTS,
+        defaultDate: this._state.dateTo,
+        onChange: this.#dueDateToChangeHandler,
+        minDate: this._state.dateFrom || 'today',
+      },
+    );
+  }
+
+  #dueDateFromChangeHandler = ([date]) => {
+    this.updateElement({
+      dateFrom: date,
+    });
+    this.#dateFromDatapicker.set('maxDate', date);
+  };
+
+  #dueDateToChangeHandler = ([date]) => {
+    this.updateElement({
+      dateTo: date,
+    });
+    this.#dateToDatapicker.set('minDate', date);
+  };
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
