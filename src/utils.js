@@ -39,15 +39,19 @@ function humanizePointDate(date, format) {
  * @returns {string}
  */
 function formatedDuration(durationObj) {
-  const days = Math.floor(durationObj.asDays());
-  const hours = durationObj.hours();
-  const minutes = durationObj.minutes();
+  const days = `${Math.floor(durationObj.asDays()).toString().padStart(2, '0')}D`;
+  const hours = `${durationObj.hours().toString().padStart(2, '0')}H`;
+  const minutes = `${durationObj.minutes().toString().padStart(2, '0')}M`;
 
-  if (days === 0 && hours === 0 && minutes === 0) {
-    return '00D 00H 01M';
+  if (durationObj.asDays() >= 1) {
+    return `${days} ${hours} ${minutes}`;
   }
 
-  return `${days.toString().padStart(2, '0')}D ${hours.toString().padStart(2, '0')}H ${minutes.toString().padStart(2, '0')}M`;
+  if (durationObj.asHours() >= 1) {
+    return `${hours} ${minutes}`;
+  }
+
+  return minutes;
 }
 
 /**
@@ -56,6 +60,9 @@ function formatedDuration(durationObj) {
  * @returns {string}
  */
 function humanizePointDuration(dateFrom, dateTo) {
+  if (!dateFrom || !dateTo) {
+    return '';
+  }
   const startDate = dayjs(dateFrom);
   const endDate = dayjs(dateTo);
   const durationDiff = dayjs.duration(endDate.diff(startDate));
