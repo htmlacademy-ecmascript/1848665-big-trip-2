@@ -1,4 +1,6 @@
 import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+dayjs.extend(duration);
 
 /**
  * @returns {number}
@@ -32,6 +34,21 @@ function updateItem(items, update) {
 function humanizePointDate(date, format) {
   return date ? dayjs(date).format(format) : '';
 }
+/**
+ * @param {object} durationObj
+ * @returns {string}
+ */
+function formatedDuration(durationObj) {
+  const days = Math.floor(durationObj.asDays());
+  const hours = durationObj.hours();
+  const minutes = durationObj.minutes();
+
+  if (days === 0 && hours === 0 && minutes === 0) {
+    return '00D 00H 01M';
+  }
+
+  return `${days.toString().padStart(2, '0')}D ${hours.toString().padStart(2, '0')}H ${minutes.toString().padStart(2, '0')}M`;
+}
 
 /**
  * @param {string} dateFrom
@@ -39,24 +56,10 @@ function humanizePointDate(date, format) {
  * @returns {string}
  */
 function humanizePointDuration(dateFrom, dateTo) {
-  if (dateFrom && dateTo) {
-    const duration = dayjs(dateTo).diff(dayjs(dateFrom), 'minute');
-    const days = Math.floor(duration / 1440);
-    const hours = Math.floor((duration % 1440) / 60);
-    const minutes = duration % 60;
-
-    if (days > 0) {
-      // Более суток
-      return `${days}D ${hours.toString().padStart(2, '0')}H ${minutes.toString().padStart(2, '0')}M`;
-    } else if (hours > 0) {
-      // Менее суток, но более часа
-      return `${hours.toString().padStart(2, '0')}H ${minutes.toString().padStart(2, '0')}M`;
-    } else {
-      // Менее часа
-      return `${minutes}M`;
-    }
-  }
-  return '';
+  const startDate = dayjs(dateFrom);
+  const endDate = dayjs(dateTo);
+  const durationDiff = dayjs.duration(endDate.diff(startDate));
+  return formatedDuration(durationDiff);
 }
 
 /**
