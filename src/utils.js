@@ -1,4 +1,6 @@
 import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+dayjs.extend(duration);
 
 /**
  * @returns {number}
@@ -32,6 +34,25 @@ function updateItem(items, update) {
 function humanizePointDate(date, format) {
   return date ? dayjs(date).format(format) : '';
 }
+/**
+ * @param {object} durationObj
+ * @returns {string}
+ */
+function formatedDuration(durationObj) {
+  const days = `${Math.floor(durationObj.asDays()).toString().padStart(2, '0')}D`;
+  const hours = `${durationObj.hours().toString().padStart(2, '0')}H`;
+  const minutes = `${durationObj.minutes().toString().padStart(2, '0')}M`;
+
+  if (durationObj.asDays() >= 1) {
+    return `${days} ${hours} ${minutes}`;
+  }
+
+  if (durationObj.asHours() >= 1) {
+    return `${hours} ${minutes}`;
+  }
+
+  return minutes;
+}
 
 /**
  * @param {string} dateFrom
@@ -39,17 +60,13 @@ function humanizePointDate(date, format) {
  * @returns {string}
  */
 function humanizePointDuration(dateFrom, dateTo) {
-  if (dateFrom && dateTo) {
-    const duration = dayjs(dateTo).diff(dayjs(dateFrom), 'minute');
-
-    if (duration >= 60) {
-      const hours = Math.floor(duration / 60);
-      const minute = duration % 60;
-      return `0${hours}H ${minute || '00'}M`;
-    }
-    return `${duration}M`;
+  if (!dateFrom || !dateTo) {
+    return '';
   }
-  return '';
+  const startDate = dayjs(dateFrom);
+  const endDate = dayjs(dateTo);
+  const durationDiff = dayjs.duration(endDate.diff(startDate));
+  return formatedDuration(durationDiff);
 }
 
 /**
