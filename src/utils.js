@@ -16,15 +16,6 @@ function getRandomArrayElement(items) {
 }
 
 /**
- * @param {Array} items
- * @param {object} update
- * @returns {Array}
- */
-function updateItem(items, update) {
-  return items.map((item) => (item.id === update.id ? update : item));
-}
-
-/**
  * @param {object} date
  * @param {string} format
  * @returns {string}
@@ -102,7 +93,6 @@ function isPointFavorite(isFavorite) {
 export {
   getRandomNumber,
   getRandomArrayElement,
-  updateItem,
   humanizePointDate,
   humanizePointDuration,
   isPointFavorite,

@@ -1,6 +1,7 @@
 import {render,replace, remove} from '../framework/render.js';
 import EventsItemView from '../view/events-item-view.js';
 import PointEditView from '../view/point-edit-view.js';
+import {UserAction, UpdateType} from '../const.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -80,13 +81,25 @@ export default class PointPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#handleDataChange({...this.#point, isFavorite: !this.#point.isFavorite}, this.#destinations, this.#offers);
+    this.#handleDataChange(
+      UserAction.UPDATE_TASK,
+      UpdateType.MINOR,
+      {...this.#point, isFavorite: !this.#point.isFavorite},
+      this.#destinations,
+      this.#offers
+    );
   };
 
   #handleFormSubmit = (point) => {
     this.#replaceFormToCard();
     document.addEventListener('keydown', this.#escKeyDownHandler);
-    this.#handleDataChange({...point}, this.#destinations, this.#offers);
+    this.#handleDataChange(
+      UserAction.UPDATE_TASK,
+      UpdateType.MINOR,
+      {...point},
+      this.#destinations,
+      this.#offers,
+    );
   };
 
   #handleFormArrowClick = () => {
