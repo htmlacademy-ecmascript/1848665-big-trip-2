@@ -1,7 +1,6 @@
-import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import {DateFormat} from '../const.js';
-import {pointTypes} from '../view-data.js';
+import {pointTypes, DateFormat} from '../const.js';
 import {getRandomNumber, humanizePointDate} from '../utils.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
 function createOffers(array, offers, type) {
   const typeOffers = array.reduce((acc, currentValue) => {
@@ -84,23 +83,21 @@ function createTypeList(array, checkedType) {
     return '';
   }
   return array.map((element) => {
-    const isChecked = element.value === checkedType ? 'checked' : '';
+    const isChecked = element.toLowerCase() === checkedType ? 'checked' : '';
     return (
       `<div class="event__type-item">
-        <input id="event-type-${element.value}-1" class="event__type-input visually-hidden" type="radio" name="event-type" value="${element.value}" ${isChecked}>
-        <label class="event__type-label event__type-label--${element.value}" for="event-type-${element.value}-1">${element.title}</label>
+        <input id="event-type-${element.toLowerCase()}-1" class="event__type-input visually-hidden" type="radio" name="event-type" value="${element.toLowerCase()}" ${isChecked}>
+        <label class="event__type-label event__type-label--${element.toLowerCase()}" for="event-type-${element.toLowerCase()}-1">${element}</label>
       </div>`
     );
   }).join('');
 }
-
 
 function createFormPointTemplate(point, arrayDestinations, arrayOffers) {
   const { basePrice, dateFrom, dateTo, destination, offers, type } = point;
   const pointDestination = arrayDestinations.filter((element) => destination === element.id)[0];
   const dateTimeFrom = humanizePointDate(dateFrom, DateFormat.DATE_TIME_FORM_POINTS);
   const dateTimeTo = humanizePointDate(dateTo, DateFormat.DATE_TIME_FORM_POINTS);
-
 
   return (
     `<li class="trip-events__item">

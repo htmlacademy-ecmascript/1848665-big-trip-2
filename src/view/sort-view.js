@@ -1,5 +1,5 @@
-import AbstractView from '../framework/view/abstract-view.js';
 import {SortingType} from '../const.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 const renderSortItem = (name, isDisabled, currentSortType) => {
   isDisabled = (isDisabled) ? 'disabled' : '';

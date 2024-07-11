@@ -1,6 +1,6 @@
-import AbstractView from '../framework/view/abstract-view.js';
 import {DateFormat} from '../const.js';
 import {humanizePointDate, humanizePointDuration, isPointFavorite} from '../utils.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 function createOffers(array) {
   return array.map((element) => {

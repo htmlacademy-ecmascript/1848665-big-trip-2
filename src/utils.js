@@ -1,4 +1,8 @@
 import dayjs from 'dayjs';
+import isBetween from 'dayjs/plugin/isBetween';
+import {FilterType, SortingType} from './const.js';
+
+dayjs.extend(isBetween);
 
 /**
  * @returns {number}
@@ -90,13 +94,47 @@ function isPointFavorite(isFavorite) {
   return isFavorite ? 'event__favorite-btn--active' : '';
 }
 
+/**
+ * @param {string} name
+ * @param {array} points
+ * @returns {array}
+ */
+const filterPoints = (name, points) => {
+  switch (name) {
+    case FilterType.EVERYTHING:
+      return points;
+    case FilterType.FUTURE:
+      return points.filter((item) => dayjs().isBefore(dayjs(item.dateFrom)));
+    case FilterType.PRESENT:
+      return points.filter((item) => dayjs().isBetween(dayjs(item.dateTo), dayjs(item.dateFrom)));
+    case FilterType.PAST:
+      return points.filter((item) => dayjs().isAfter(dayjs(item.dateTo)));
+  }
+};
+
+/**
+ * @param {string} name
+ * @param {array} points
+ * @returns {array}
+ */
+const sortPoints = (name, points) => {
+  switch (name) {
+    case SortingType.DAY.name:
+      return points.sort(sortByDate);
+    case SortingType.TIME.name:
+      return points.sort(sortByDuration);
+    case SortingType.PRICE.name:
+      return points.sort(sortByPrice);
+  }
+  return points;
+};
+
 export {
   getRandomNumber,
   getRandomArrayElement,
   humanizePointDate,
   humanizePointDuration,
   isPointFavorite,
-  sortByDate,
-  sortByDuration,
-  sortByPrice
+  filterPoints,
+  sortPoints,
 };

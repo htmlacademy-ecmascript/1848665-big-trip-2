@@ -1,42 +1,40 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import {filterItems} from '../view-data.js';
 
-/**
- * @param {import('../view-data.js').FilterItem[]} items
- * @returns {string}
- */
-function createFilters(items) {
-  return items.map((element) => {
-    const isChecked = element.defaultChecked ? 'checked' : '';
-    return (
-      `<div class="trip-filters__filter">
-        <input id="filter-${element.value}" class="trip-filters__filter-input visually-hidden" type="radio" name="trip-filter" value="${element.value}" ${isChecked}>
-        <label class="trip-filters__filter-label" for="filter-${element.value}">${element.title}</label>
-      </div>`
-    );
-  }).join('');
-}
+const isFilterDisable = (count) => (count) ? '' : 'disabled';
+const isFilterChecked = (status) => (status) ? 'checked' : '';
 
-/**
- * @param {import('../view-data.js').FilterItem[]} items
- * @returns {string}
- */
-function createFiltersTemplate(items) {
-  return (
-    `<form class="trip-filters" action="#" method="get">
-      ${createFilters(items)}
-      <button class="visually-hidden" type="submit">Accept filter</button>
-    </form>`
-  );
-}
+const createFilterList = (filters) => filters.map(({name, count, isChecked}) => `<div class="trip-filters__filter">
+  <input id="filter-${name}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" data-filter-type="${name}" value="${name}" ${isFilterDisable(count)}  ${isFilterChecked(isChecked)}>
+  <label class="trip-filters__filter-label" for="filter-${name}">${name}</label>
+</div>
+`).join('');
+
+const createFilterFormTemplate = (filters) => (
+  `<form class="trip-filters" action="#" method="get">
+  ${createFilterList(filters)}
+  <button class="visually-hidden" type="submit">Accept filter</button>
+  </form>`
+);
 
 export default class FiltersView extends AbstractView {
-  #filterItems = filterItems;
-  constructor() {
+  #filters = null;
+  #handleFilterChange = null;
+
+  constructor({ filters, onFilterChange }) {
     super();
+    this.#filters = filters;
+    this.#handleFilterChange = onFilterChange;
+    this.element.addEventListener('change', this.#filterInputChangeHandler);
   }
 
   get template() {
-    return createFiltersTemplate(this.#filterItems);
+    return createFilterFormTemplate(this.#filters);
   }
+
+  #filterInputChangeHandler = (evt) => {
+    evt.preventDefault();
+    if (evt.target.tagName === 'INPUT') {
+      this.#handleFilterChange(evt.target.dataset.filterType);
+    }
+  };
 }
