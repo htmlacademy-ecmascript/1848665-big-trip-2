@@ -4,8 +4,23 @@ const createButtonTemplate = () => ('<button class="trip-main__event-add-btn btn
 
 
 export default class NewPointButton extends AbstractView {
+  #handleNewPointButtonClick = null;
+
+  constructor({onClick: handleNewPointButtonClick}) {
+    super();
+    this.#handleNewPointButtonClick = handleNewPointButtonClick;
+
+    this.element.addEventListener('click', this.#openPointEditFormHandler);
+  }
 
   get template() {
     return createButtonTemplate();
   }
+
+  #openPointEditFormHandler = (evt) => {
+    if (evt.target.tagName === 'BUTTON') {
+      evt.preventDefault();
+      this.#handleNewPointButtonClick();
+    }
+  };
 }

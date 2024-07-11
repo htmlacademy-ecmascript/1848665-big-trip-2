@@ -3,6 +3,9 @@ import {getRandomNumber, humanizePointDate} from '../utils.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
 function createOffers(array, offers, type) {
+  if (offers.length === 0) {
+    return '';
+  }
   const typeOffers = array.reduce((acc, currentValue) => {
     if (currentValue.type === type) {
       return [...acc, ...currentValue.offers];
@@ -27,6 +30,9 @@ function createOffers(array, offers, type) {
 }
 
 function createOffersContainer(arrayOffers, offers, type) {
+  if (offers.length === 0) {
+    return '';
+  }
   const typeOffers = arrayOffers.filter((element) => type === element.type)[0];
   if (!typeOffers.offers.length) {
     return '';
@@ -95,7 +101,8 @@ function createTypeList(array, checkedType) {
 
 function createFormPointTemplate(point, arrayDestinations, arrayOffers) {
   const { basePrice, dateFrom, dateTo, destination, offers, type } = point;
-  const pointDestination = arrayDestinations.filter((element) => destination === element.id)[0];
+  const pointDestination = destination ? arrayDestinations.filter((element) => destination === element.id)[0] : '';
+  const destinationName = pointDestination ? pointDestination.name : '';
   const dateTimeFrom = humanizePointDate(dateFrom, DateFormat.DATE_TIME_FORM_POINTS);
   const dateTimeTo = humanizePointDate(dateTo, DateFormat.DATE_TIME_FORM_POINTS);
 
@@ -118,7 +125,7 @@ function createFormPointTemplate(point, arrayDestinations, arrayOffers) {
           </div>
           <div class="event__field-group event__field-group--destination">
             <label class="event__label event__type-output" for="event-destination-1">${type}</label>
-            <input class="event__input event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${pointDestination.name}" list="destination-list-1" autocomplete="off">
+            <input class="event__input event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationName}" list="destination-list-1" autocomplete="off">
             <datalist id="destination-list-1">
               ${createDestinationList(arrayDestinations)}
             </datalist>
@@ -138,7 +145,7 @@ function createFormPointTemplate(point, arrayDestinations, arrayOffers) {
             <input class="event__input event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
           </div>
           <button class="event__save-btn btn btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Cancel</button>
+          <button class="event__reset-btn" type="reset">Delete</button>
           <button class="event__rollup-btn" type="button">
             <span class="visually-hidden">Open event</span>
           </button>
@@ -158,13 +165,14 @@ export default class PointEditView extends AbstractStatefulView {
   #handleFormSubmit = null;
   #handleFormArrowClick = null;
 
-  constructor({point, destinations, offers, onFormSubmit, onFormArrowClick}) {
+  constructor({point, destinations, offers, onFormSubmit, onFormArrowClick, deleteFormClick}) {
     super();
     this._setState(PointEditView.parsePointToState(point));
     this.#destinations = destinations;
     this.#offers = offers;
     this.#handleFormSubmit = onFormSubmit;
     this.#handleFormArrowClick = onFormArrowClick;
+    this.#deleteClickHandler = deleteFormClick;
 
     this._restoreHandlers();
   }
@@ -193,6 +201,7 @@ export default class PointEditView extends AbstractStatefulView {
     this.element.querySelectorAll('.event__type-input').forEach((input) => {
       input.addEventListener('change', this.#typeChangeHandler);
     });
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#deleteClickHandler);
   }
 
   #formSubmitHandler = (evt) => {
@@ -201,6 +210,11 @@ export default class PointEditView extends AbstractStatefulView {
   };
 
   #formClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormArrowClick();
+  };
+
+  #deleteClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleFormArrowClick();
   };

@@ -1,7 +1,8 @@
-import {DEFAULT_SORT_TYPE, UpdateType, UserAction, EmptyListMessage} from '../const.js';
+import {DEFAULT_SORT_TYPE, DEFAULT_FILTER_TYPE,UpdateType, UserAction, EmptyListMessage, EMPTY_POINT, Mode} from '../const.js';
 import {filterPoints, sortPoints} from '../utils.js';
 import {RenderPosition, remove, render} from '../framework/render.js';
 import PointPresenter from './point-presenter.js';
+import {nanoid} from 'nanoid';
 
 
 import EventsListView from '../view/events-list-view.js';
@@ -26,6 +27,7 @@ export default class BoardPresenter {
   #newPointButtonComponent = null;
   #eventsEmptyStateComponent = null;
   #sortComponent = null;
+  #newPointPresenter = null;
 
   constructor({headerContainer, eventsContainer, pointsModel, filtersModel}) {
     this.#headerContainer = headerContainer;
@@ -87,9 +89,32 @@ export default class BoardPresenter {
     }
   };
 
+  #createIdPoint = (point) => {
+    const id = nanoid();
+    return {...point, id};
+  };
+
+  #handleNewPointButtonClick = () => {
+    this.#currentSortType = DEFAULT_SORT_TYPE;
+    this.#filtersModel.setFilter(UpdateType.MINOR, DEFAULT_FILTER_TYPE);
+    if (!this.#eventsListComponent) {
+      this.#renderBoard();
+    }
+    this.#newPointPresenter = new PointPresenter({
+      eventsListComponent: this.#eventsListComponent,
+      onDataChange: this.#handleViewAction,
+      onModeChange: this.#handleModeChange,
+      mode: Mode.NEW,
+    });
+    this.#pointsPresenter.forEach((presenter) => presenter.resetView());
+    const newPoint = this.#createIdPoint(EMPTY_POINT);
+    this.#newPointPresenter.init({point: newPoint, destinations: this.#boardDestinations, offers: this.#boardOffers});
+    this.#pointsPresenter.set(newPoint.id, this.#newPointPresenter);
+  };
+
   #renderNewPointButton() {
     if (this.#newPointButtonComponent === null) {
-      this.#newPointButtonComponent = new NewPointButton();
+      this.#newPointButtonComponent = new NewPointButton({onClick: this.#handleNewPointButtonClick});
       render(this.#newPointButtonComponent, this.#headerContainer);
     }
   }
@@ -112,6 +137,7 @@ export default class BoardPresenter {
       eventsListComponent: this.#eventsListComponent,
       onDataChange: this.#handleViewAction,
       onModeChange: this.#handleModeChange,
+      mode: Mode.DEFAULT,
     });
     pointPresenter.init({point, destinations, offers});
     this.#pointsPresenter.set(point.id, pointPresenter);

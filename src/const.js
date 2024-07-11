@@ -100,6 +100,22 @@ const DEFAULT_FILTER_TYPE = FilterType.EVERYTHING;
  */
 const DEFAULT_SORT_TYPE = SortingType.DAY.name;
 
+const EMPTY_POINT = {
+  type: pointTypes[0],
+  destination: '',
+  dateFrom: null,
+  dateTo: null,
+  basePrice: 0,
+  offers: [],
+  isFavorite: false,
+};
+
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+  NEW: 'NEW',
+};
+
 export {
   pointTypes,
   DateFormat,
@@ -110,4 +126,6 @@ export {
   SortingType,
   DEFAULT_FILTER_TYPE,
   DEFAULT_SORT_TYPE,
+  EMPTY_POINT,
+  Mode,
 };
