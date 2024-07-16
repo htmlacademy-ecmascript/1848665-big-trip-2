@@ -2,7 +2,7 @@ import {DEFAULT_SORT_TYPE, DEFAULT_FILTER_TYPE, UpdateType, UserAction, EmptyLis
 import {filterPoints, sortPoints} from '../utils.js';
 import {RenderPosition, remove, render} from '../framework/render.js';
 import PointPresenter from './point-presenter.js';
-import CreatePointPresenter from './create-point-presenter.js';
+import AdditionPointPresenter from './addition-point-presenter.js';
 
 import EventsListView from '../view/events-list-view.js';
 import TripInfoView from '../view/trip-info-view.js';
@@ -101,7 +101,7 @@ export default class BoardPresenter {
   };
 
   #renderCreatePoint() {
-    this.#newPointPresenter = new CreatePointPresenter({
+    this.#newPointPresenter = new AdditionPointPresenter({
       eventsListComponent: this.#eventsListComponent,
       onDataChange: this.#handleViewAction,
       onModeChange: this.#handleModeChange,

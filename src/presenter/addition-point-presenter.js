@@ -1,10 +1,10 @@
 import {UserAction, UpdateType} from '../const.js';
 import {RenderPosition, render, replace, remove} from '../framework/render.js';
 import AbstractView from '../framework/view/abstract-view.js';
-import CreatePointView from '../view/create-point-view.js';
+import AdditionPointView from '../view/addition-point-view.js';
 
-export default class CreatePointPresenter extends AbstractView {
-  #createPointComponent = null;
+export default class AdditionPointPresenter extends AbstractView {
+  #additionPointComponent = null;
   #eventsListComponent = null;
   #handleDataChange = null;
   #handleModeChange = null;
@@ -27,9 +27,9 @@ export default class CreatePointPresenter extends AbstractView {
     this.#destinations = destinations;
     this.#offers = offers;
 
-    const prevCreatePointComponent = this.#createPointComponent;
+    const prevAdditionPointComponent = this.#additionPointComponent;
 
-    this.#createPointComponent = new CreatePointView({
+    this.#additionPointComponent = new AdditionPointView({
       point: this.#point,
       destinations: this.#destinations,
       offers: this.#offers,
@@ -37,16 +37,16 @@ export default class CreatePointPresenter extends AbstractView {
       onCancelButtonClick: this.#handleCancelFormClose,
     });
 
-    if (prevCreatePointComponent === null) {
-      render(this.#createPointComponent, this.#eventsListComponent.element, RenderPosition.AFTERBEGIN);
+    if (prevAdditionPointComponent === null) {
+      render(this.#additionPointComponent, this.#eventsListComponent.element, RenderPosition.AFTERBEGIN);
       return;
     }
-    replace(this.#createPointComponent, prevCreatePointComponent);
-    remove(prevCreatePointComponent);
+    replace(this.#additionPointComponent, prevAdditionPointComponent);
+    remove(prevAdditionPointComponent);
   }
 
   destroy() {
-    remove(this.#createPointComponent);
+    remove(this.#additionPointComponent);
   }
 
   #escKeyDownHandler = (evt) => {

@@ -101,6 +101,7 @@ const DEFAULT_FILTER_TYPE = FilterType.EVERYTHING;
 const DEFAULT_SORT_TYPE = SortingType.DAY.name;
 
 const EMPTY_POINT = {
+  id: null,
   type: pointTypes[5],
   destination: '',
   dateFrom: null,

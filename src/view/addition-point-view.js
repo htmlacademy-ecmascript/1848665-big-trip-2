@@ -1,27 +1,22 @@
 import {pointTypes, DateFormat} from '../const.js';
 import {getRandomNumber} from '../utils.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
+import {nanoid} from 'nanoid';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
-function createOffers(array, offers, type) {
-  if (offers.length === 0) {
+function createOffers(typeOffersObject, selectedOffers) {
+  if (!typeOffersObject || !typeOffersObject.offers || !typeOffersObject.offers.length) {
     return '';
   }
-  const typeOffers = array.reduce((acc, currentValue) => {
-    if (currentValue.type === type) {
-      return [...acc, ...currentValue.offers];
-    }
-    return acc;
-  }, []);
 
-  return typeOffers.map((element) => {
-    const isChecked = offers.includes(element.id);
+  return typeOffersObject.offers.map((element) => {
+    const isChecked = selectedOffers.includes(element.id);
 
     return (
       `<div class="event__offer-selector">
-        <input class="event__offer-checkbox visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${isChecked ? 'checked' : ''}>
-        <label class="event__offer-label" for="event-offer-luggage-1">
+        <input class="event__offer-checkbox visually-hidden" id="${element.id}" type="checkbox" name="${element.id}" ${isChecked ? 'checked' : ''}>
+        <label class="event__offer-label" for="${element.id}">
           <span class="event__offer-title">${element.title}</span>
           &plus;&euro;&nbsp;
           <span class="event__offer-price">${element.price}</span>
@@ -31,19 +26,22 @@ function createOffers(array, offers, type) {
   }).join('');
 }
 
-function createOffersContainer(arrayOffers, offers, type) {
-  if (offers.length === 0) {
+function createOffersContainer(arrayOffers, selectedOffers, type) {
+  if (!arrayOffers || !Array.isArray(arrayOffers)) {
     return '';
   }
-  const typeOffers = arrayOffers.filter((element) => type === element.type)[0];
-  if (!typeOffers.offers.length) {
+
+  const typeOffersObject = arrayOffers.find((offerGroup) => offerGroup.type === type);
+
+  if (!typeOffersObject || !typeOffersObject.offers || !typeOffersObject.offers.length) {
     return '';
   }
+
   return (
     `<section class="event__section event__section--offers">
       <h3 class="event__section-title event__section-title--offers">Offers</h3>
       <div class="event__available-offers">
-        ${createOffers(arrayOffers, offers, type)}
+        ${createOffers(typeOffersObject, selectedOffers)}
       </div>
     </section>`
   );
@@ -66,7 +64,7 @@ function createDestinationPicture(pointDestination) {
   return pointDestination.pictures.map((element) => `<img class="event__photo" src="${element.src}${getRandomNumber()}" alt="${element.alt}">`).join('');
 }
 
-function createDestination(pointDestination) {
+function createDestinationSection(pointDestination) {
   if (pointDestination) {
     return (
       `<section class="event__section event__section--destination">
@@ -79,14 +77,14 @@ function createDestination(pointDestination) {
   return '';
 }
 
-function createDestinationList(arrayDestinations) {
+function createDestinationOptions(arrayDestinations) {
   if (!arrayDestinations.length) {
     return '';
   }
   return arrayDestinations.map((element) => `<option value="${element.name}"></option>`).join('');
 }
 
-function createTypeList(array, checkedType) {
+function createTypeRadioButtons(array, checkedType) {
   if (!array.length) {
     return '';
   }
@@ -94,14 +92,14 @@ function createTypeList(array, checkedType) {
     const isChecked = element.toLowerCase() === checkedType ? 'checked' : '';
     return (
       `<div class="event__type-item">
-        <input id="event-type-${element.toLowerCase()}-1" class="event__type-input visually-hidden" type="radio" name="event-type" value="${element.toLowerCase()}" ${isChecked}>
-        <label class="event__type-label event__type-label--${element.toLowerCase()}" for="event-type-${element.toLowerCase()}-1">${element}</label>
+        <input id="${element.toLowerCase()}" class="event__type-input visually-hidden" type="radio" name="event-type" value="${element.toLowerCase()}" ${isChecked}>
+        <label class="event__type-label event__type-label--${element.toLowerCase()}" for="${element.toLowerCase()}">${element}</label>
       </div>`
     );
   }).join('');
 }
 
-function getCreatePointTemplate(point, arrayDestinations, arrayOffers) {
+function createAdditionPointFormTemplate(point, arrayDestinations, arrayOffers) {
   const {basePrice, dateFrom, dateTo, destination, offers, type} = point;
   const pointDestination = arrayDestinations.filter((element) => destination === element.id)[0];
 
@@ -118,7 +116,7 @@ function getCreatePointTemplate(point, arrayDestinations, arrayOffers) {
             <div class="event__type-list">
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Event type</legend>
-                  ${createTypeList(pointTypes, type)}
+                  ${createTypeRadioButtons(pointTypes, type.toLowerCase())}
               </fieldset>
             </div>
           </div>
@@ -126,7 +124,7 @@ function getCreatePointTemplate(point, arrayDestinations, arrayOffers) {
             <label class="event__label event__type-output" for="event-destination-1">${type}</label>
             <input class="event__input event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${pointDestination ? pointDestination.name : ''}" list="destination-list-1"  autocomplete="off" required>
             <datalist id="destination-list-1">
-              ${createDestinationList(arrayDestinations)}
+              ${createDestinationOptions(arrayDestinations)}
             </datalist>
           </div>
           <div class="event__field-group event__field-group--time">
@@ -148,14 +146,14 @@ function getCreatePointTemplate(point, arrayDestinations, arrayOffers) {
         </header>
         <section class="event__details">
           ${createOffersContainer(arrayOffers, offers, type)}
-          ${createDestination(pointDestination)}
+          ${createDestinationSection(pointDestination)}
         </section>
       </form>
     </li>`
   );
 }
 
-export default class CreatePointView extends AbstractStatefulView {
+export default class AdditionPointView extends AbstractStatefulView {
   #point = null;
   #destinations = null;
   #offers = null;
@@ -166,7 +164,7 @@ export default class CreatePointView extends AbstractStatefulView {
 
   constructor({point, destinations, offers, onFormSubmit, onCancelButtonClick}) {
     super();
-    this._setState(CreatePointView.parsePointToState(point));
+    this._setState(AdditionPointView.parsePointToState(point));
     this.#destinations = destinations;
     this.#offers = offers;
     this.#handleFormSubmit = onFormSubmit;
@@ -177,6 +175,10 @@ export default class CreatePointView extends AbstractStatefulView {
     }
     if (!this._state.dateTo) {
       this._state.dateTo = new Date(new Date().getTime() + 24 * 60 * 60 * 1000); // +1 день
+    }
+
+    if (!this._state.id) {
+      this._state.id = nanoid();
     }
 
     this._restoreHandlers();
@@ -191,7 +193,7 @@ export default class CreatePointView extends AbstractStatefulView {
   }
 
   get template() {
-    return getCreatePointTemplate(this._state, this.#destinations, this.#offers);
+    return createAdditionPointFormTemplate (this._state, this.#destinations, this.#offers);
   }
 
   removeElement() {
@@ -207,12 +209,16 @@ export default class CreatePointView extends AbstractStatefulView {
   }
 
   reset(point) {
-    this.updateElement(CreatePointView.parsePointToState(point));
+    this.updateElement(AdditionPointView.parsePointToState(point));
   }
 
   _restoreHandlers() {
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__input--destination').addEventListener('input', this.#destinationInputHandler);
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#priceInputHandler);
+    this.element.querySelectorAll('.event__offer-checkbox').forEach((input) => {
+      input.addEventListener('change', this.#offersChangeHandler);
+    });
     this.element.querySelectorAll('.event__type-input').forEach((input) => {
       input.addEventListener('change', this.#typeChangeHandler);
     });
@@ -287,7 +293,7 @@ export default class CreatePointView extends AbstractStatefulView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit(CreatePointView.parseStateToPoint(this._state));
+    this.#handleFormSubmit(AdditionPointView.parseStateToPoint(this._state));
   };
 
   #destinationInputHandler = (evt) => {
@@ -325,5 +331,25 @@ export default class CreatePointView extends AbstractStatefulView {
   #cancelClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleCancelForm();
+  };
+
+  #priceInputHandler = (evt) => {
+    const price = evt.target.value;
+    this.updateElement({
+      basePrice: price,
+    });
+  };
+
+  #offersChangeHandler = (evt) => {
+    const offers = evt.target.id;
+    if (evt.target.checked) {
+      this.updateElement({
+        offers: [...this._state.offers, offers]
+      });
+    } else {
+      this.updateElement({
+        offers: this._state.offers.filter((element) => element !== offers)
+      });
+    }
   };
 }
