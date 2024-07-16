@@ -1,12 +1,13 @@
 import {UserAction, UpdateType, Mode} from '../const.js';
 import {render, replace, remove} from '../framework/render.js';
 import EventsItemView from '../view/events-item-view.js';
-import PointEditView from '../view/point-edit-view.js';
+import EditPointView from '../view/edit-point-view.js';
 
 export default class PointPresenter {
   #eventsListComponent = null;
   #handleDataChange = null;
   #handleModeChange = null;
+  #handleAdditionModeChange = null;
 
   #point = null;
   #destinations = null;
@@ -16,10 +17,11 @@ export default class PointPresenter {
   #pointComponent = null;
   #formPointComponent = null;
 
-  constructor({eventsListComponent, onDataChange, onModeChange}) {
+  constructor({eventsListComponent, onDataChange, onModeChange, onAdditionModeChange}) {
     this.#eventsListComponent = eventsListComponent;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
+    this.#handleAdditionModeChange = onAdditionModeChange;
   }
 
   init({point, destinations, offers}) {
@@ -39,7 +41,7 @@ export default class PointPresenter {
       onFavoriteClick: this.#handleFavoriteClick,
     });
 
-    this.#formPointComponent = new PointEditView({
+    this.#formPointComponent = new EditPointView({
       point: this.#point,
       destinations: this.#destinations,
       offers: this.#offers,
@@ -122,6 +124,7 @@ export default class PointPresenter {
   #replaceCardToForm() {
     replace(this.#formPointComponent, this.#pointComponent);
     this.#handleModeChange();
+    this.#handleAdditionModeChange();
     this.#mode = Mode.EDITING;
   }
 

@@ -158,7 +158,7 @@ export default class AdditionPointView extends AbstractStatefulView {
   #destinations = null;
   #offers = null;
   #handleFormSubmit = null;
-  #handleCancelForm = null;
+  #handleCancelButtonClick = null;
   #dateFromDatapicker = null;
   #dateToDatapicker = null;
 
@@ -168,7 +168,7 @@ export default class AdditionPointView extends AbstractStatefulView {
     this.#destinations = destinations;
     this.#offers = offers;
     this.#handleFormSubmit = onFormSubmit;
-    this.#handleCancelForm = onCancelButtonClick;
+    this.#handleCancelButtonClick = onCancelButtonClick;
 
     if (!this._state.dateFrom) {
       this._state.dateFrom = new Date();
@@ -213,6 +213,7 @@ export default class AdditionPointView extends AbstractStatefulView {
   }
 
   _restoreHandlers() {
+    document.addEventListener('keydown', this.#escKeyDownHandler);
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__input--destination').addEventListener('input', this.#destinationInputHandler);
     this.element.querySelector('.event__input--price').addEventListener('change', this.#priceInputHandler);
@@ -330,7 +331,15 @@ export default class AdditionPointView extends AbstractStatefulView {
 
   #cancelClickHandler = (evt) => {
     evt.preventDefault();
-    this.#handleCancelForm();
+    this.#handleCancelButtonClick();
+  };
+
+  #escKeyDownHandler = (evt) => {
+    if (evt.key === 'Escape') {
+      evt.preventDefault();
+      this.#handleCancelButtonClick();
+      document.removeEventListener('keydown', this.#escKeyDownHandler);
+    }
   };
 
   #priceInputHandler = (evt) => {

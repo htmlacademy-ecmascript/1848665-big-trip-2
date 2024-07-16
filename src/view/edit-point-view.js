@@ -155,7 +155,7 @@ function createEditPointFormTemplate(point, arrayDestinations, arrayOffers) {
   );
 }
 
-export default class PointEditView extends AbstractStatefulView {
+export default class EditPointView extends AbstractStatefulView {
   #destinations = null;
   #offers = null;
   #handleFormSubmit = null;
@@ -166,7 +166,7 @@ export default class PointEditView extends AbstractStatefulView {
 
   constructor({point, destinations, offers, onFormSubmit, onFormArrowClick, deleteFormClick}) {
     super();
-    this._setState(PointEditView.parsePointToState(point));
+    this._setState(EditPointView.parsePointToState(point));
     this.#destinations = destinations;
     this.#offers = offers;
     this.#handleFormSubmit = onFormSubmit;
@@ -201,7 +201,7 @@ export default class PointEditView extends AbstractStatefulView {
   }
 
   reset(point) {
-    this.updateElement(PointEditView.parsePointToState(point));
+    this.updateElement(EditPointView.parsePointToState(point));
   }
 
   _restoreHandlers() {
@@ -266,8 +266,8 @@ export default class PointEditView extends AbstractStatefulView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit(PointEditView.parseStateToPoint(this._state));
-    this.reset(PointEditView.parsePointToState(this._state));
+    this.#handleFormSubmit(EditPointView.parseStateToPoint(this._state));
+    this.reset(EditPointView.parsePointToState(this._state));
   };
 
   #formClickHandler = (evt) => {
@@ -277,7 +277,7 @@ export default class PointEditView extends AbstractStatefulView {
 
   #deleteClickHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormDeleteClick(PointEditView.parseStateToPoint(this._state));
+    this.#handleFormDeleteClick(EditPointView.parseStateToPoint(this._state));
   };
 
   #destinationInputHandler = (evt) => {

@@ -7,18 +7,16 @@ export default class AdditionPointPresenter extends AbstractView {
   #additionPointComponent = null;
   #eventsListComponent = null;
   #handleDataChange = null;
-  #handleModeChange = null;
   #handleCancelForm = null;
 
   #point = null;
   #destinations = null;
   #offers = null;
 
-  constructor({eventsListComponent, onDataChange, onModeChange, onCancelButtonClick}) {
+  constructor({eventsListComponent, onDataChange, onCancelButtonClick}) {
     super();
     this.#eventsListComponent = eventsListComponent;
     this.#handleDataChange = onDataChange;
-    this.#handleModeChange = onModeChange;
     this.#handleCancelForm = onCancelButtonClick;
   }
 
@@ -72,4 +70,10 @@ export default class AdditionPointPresenter extends AbstractView {
     this.#handleCancelForm();
     this.destroy();
   };
+
+  resetView() {
+    if (this.#additionPointComponent !== null) {
+      remove(this.#additionPointComponent);
+    }
+  }
 }

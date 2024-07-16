@@ -52,6 +52,14 @@ export default class BoardPresenter {
     this.#pointsPresenter.forEach((presenter) => presenter.resetView());
   };
 
+  #handleAdditionModeChange = () => {
+    if (this.#newPointPresenter !== null) {
+      this.#newPointPresenter.resetView();
+      this.#isFirstRender = false;
+      this.#renderNewPointButton();
+    }
+  };
+
   #handleViewAction = (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.UPDATE_TASK:
@@ -97,14 +105,13 @@ export default class BoardPresenter {
     this.#currentSortType = DEFAULT_SORT_TYPE;
     this.#filtersModel.setFilter(UpdateType.MINOR, DEFAULT_FILTER_TYPE);
     this.#renderCreatePoint();
-    this.#pointsPresenter.forEach((presenter) => presenter.resetView());
+    this.#handleModeChange();
   };
 
   #renderCreatePoint() {
     this.#newPointPresenter = new AdditionPointPresenter({
       eventsListComponent: this.#eventsListComponent,
       onDataChange: this.#handleViewAction,
-      onModeChange: this.#handleModeChange,
       onCancelButtonClick: this.#handleCancelButtonClick,
     });
     this.#newPointPresenter.init({
@@ -153,6 +160,7 @@ export default class BoardPresenter {
       eventsListComponent: this.#eventsListComponent,
       onDataChange: this.#handleViewAction,
       onModeChange: this.#handleModeChange,
+      onAdditionModeChange: this.#handleAdditionModeChange,
     });
     pointPresenter.init({point, destinations, offers});
     this.#pointsPresenter.set(point.id, pointPresenter);
