@@ -1,7 +1,7 @@
-import {RenderPosition, render, replace, remove} from '../framework/render.js';
+import {UserAction, UpdateType, Mode} from '../const.js';
+import {render, replace, remove} from '../framework/render.js';
 import EventsItemView from '../view/events-item-view.js';
 import PointEditView from '../view/point-edit-view.js';
-import {UserAction, UpdateType, Mode} from '../const.js';
 
 export default class PointPresenter {
   #eventsListComponent = null;
@@ -16,11 +16,10 @@ export default class PointPresenter {
   #pointComponent = null;
   #formPointComponent = null;
 
-  constructor({eventsListComponent, onDataChange, onModeChange, mode}) {
+  constructor({eventsListComponent, onDataChange, onModeChange}) {
     this.#eventsListComponent = eventsListComponent;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
-    this.#mode = mode;
   }
 
   init({point, destinations, offers}) {
@@ -50,13 +49,8 @@ export default class PointPresenter {
     });
 
     if (prevPointComponent === null || prevFormPointComponent === null) {
-      if (this.#mode === Mode.DEFAULT) {
-        render(this.#pointComponent, this.#eventsListComponent.element);
-        return;
-      } else {
-        render(this.#formPointComponent, this.#eventsListComponent.element, RenderPosition.AFTERBEGIN);
-        return;
-      }
+      render(this.#pointComponent, this.#eventsListComponent.element);
+      return;
     }
 
     if (this.#mode === Mode.DEFAULT) {
@@ -64,12 +58,6 @@ export default class PointPresenter {
     }
     if (this.#mode === Mode.EDITING) {
       replace(this.#formPointComponent, prevFormPointComponent);
-    }
-
-    if (this.#mode === Mode.NEW) {
-      this.#replaceFormToCard();
-      replace(this.#formPointComponent, prevFormPointComponent);
-      this.#mode = Mode.EDITING;
     }
 
     remove(prevPointComponent);
@@ -89,11 +77,11 @@ export default class PointPresenter {
     document.addEventListener('keydown', this.#escKeyDownHandler);
   };
 
-  #handleDeleteClick = () => {
+  #handleDeleteClick = (point) => {
     this.#handleDataChange(
       UserAction.DELETE_TASK,
       UpdateType.MINOR,
-      this.#point,
+      {...point},
       this.#destinations,
       this.#offers,
     );
@@ -111,7 +99,7 @@ export default class PointPresenter {
 
   #handleFormSubmit = (point) => {
     this.#replaceFormToCard();
-    document.addEventListener('keydown', this.#escKeyDownHandler);
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
     this.#handleDataChange(
       UserAction.UPDATE_TASK,
       UpdateType.MINOR,

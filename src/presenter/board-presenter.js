@@ -1,9 +1,8 @@
-import {DEFAULT_SORT_TYPE, DEFAULT_FILTER_TYPE,UpdateType, UserAction, EmptyListMessage, EMPTY_POINT, Mode} from '../const.js';
+import {DEFAULT_SORT_TYPE, DEFAULT_FILTER_TYPE, UpdateType, UserAction, EmptyListMessage, EMPTY_POINT} from '../const.js';
 import {filterPoints, sortPoints} from '../utils.js';
 import {RenderPosition, remove, render} from '../framework/render.js';
 import PointPresenter from './point-presenter.js';
-import {nanoid} from 'nanoid';
-
+import CreatePointPresenter from './create-point-presenter.js';
 
 import EventsListView from '../view/events-list-view.js';
 import TripInfoView from '../view/trip-info-view.js';
@@ -21,10 +20,12 @@ export default class BoardPresenter {
   #boardOffers = [];
   #pointsPresenter = new Map();
   #currentSortType = DEFAULT_SORT_TYPE;
+  #isFirstRender = false;
 
   #eventsListComponent = new EventsListView();
   #tripInfoComponent = new TripInfoView();
   #newPointButtonComponent = null;
+
   #eventsEmptyStateComponent = null;
   #sortComponent = null;
   #newPointPresenter = null;
@@ -58,6 +59,9 @@ export default class BoardPresenter {
         break;
       case UserAction.ADD_TASK:
         this.#pointsModel.addPoint(updateType, update);
+        this.#newPointPresenter.removeElement();
+        this.#isFirstRender = false;
+        this.#renderNewPointButton();
         break;
       case UserAction.DELETE_TASK:
         this.#pointsModel.deletePoint(updateType, update);
@@ -89,34 +93,46 @@ export default class BoardPresenter {
     }
   };
 
-  #createIdPoint = (point) => {
-    const id = nanoid();
-    return {...point, id};
-  };
-
   #handleNewPointButtonClick = () => {
     this.#currentSortType = DEFAULT_SORT_TYPE;
     this.#filtersModel.setFilter(UpdateType.MINOR, DEFAULT_FILTER_TYPE);
-    if (!this.#eventsListComponent) {
-      this.#renderBoard();
-    }
-    this.#newPointPresenter = new PointPresenter({
+    this.#renderCreatePoint();
+    this.#pointsPresenter.forEach((presenter) => presenter.resetView());
+  };
+
+  #renderCreatePoint() {
+    this.#newPointPresenter = new CreatePointPresenter({
       eventsListComponent: this.#eventsListComponent,
       onDataChange: this.#handleViewAction,
       onModeChange: this.#handleModeChange,
-      mode: Mode.NEW,
+      onCancelButtonClick: this.#handleCancelButtonClick,
     });
-    this.#pointsPresenter.forEach((presenter) => presenter.resetView());
-    const newPoint = this.#createIdPoint(EMPTY_POINT);
-    this.#newPointPresenter.init({point: newPoint, destinations: this.#boardDestinations, offers: this.#boardOffers});
-    this.#pointsPresenter.set(newPoint.id, this.#newPointPresenter);
+    this.#newPointPresenter.init({
+      point: EMPTY_POINT,
+      destinations: this.#boardDestinations,
+      offers: this.#boardOffers,
+    });
+    this.#isFirstRender = true;
+    this.#renderNewPointButton();
+  }
+
+  #handleCancelButtonClick = () => {
+    this.#isFirstRender = false;
+    this.#renderNewPointButton();
+    this.#clearBoard();
+    this.#renderBoard();
   };
 
   #renderNewPointButton() {
-    if (this.#newPointButtonComponent === null) {
-      this.#newPointButtonComponent = new NewPointButton({onClick: this.#handleNewPointButtonClick});
-      render(this.#newPointButtonComponent, this.#headerContainer);
+    const prevNewPointButtonComponent = this.#newPointButtonComponent;
+    if (prevNewPointButtonComponent) {
+      remove(prevNewPointButtonComponent);
     }
+    this.#newPointButtonComponent = new NewPointButton({
+      onClick: this.#handleNewPointButtonClick,
+      isDisabled: this.#isFirstRender,
+    });
+    render(this.#newPointButtonComponent, this.#headerContainer);
   }
 
   #renderEventsEmptyState() {
@@ -137,7 +153,6 @@ export default class BoardPresenter {
       eventsListComponent: this.#eventsListComponent,
       onDataChange: this.#handleViewAction,
       onModeChange: this.#handleModeChange,
-      mode: Mode.DEFAULT,
     });
     pointPresenter.init({point, destinations, offers});
     this.#pointsPresenter.set(point.id, pointPresenter);

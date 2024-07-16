@@ -26,7 +26,7 @@ const pointTypes = [
 const DateFormat = {
   DATE_FORMAT: 'YYYY-MM-DD',
   DATE_TIME_FORMAT: 'YYYY-MM-DDTHH:mm',
-  DATE_TIME_FORM_POINTS: 'YY/MM/DD HH:mm',
+  DATE_TIME_FORM_POINTS: 'd/m/y H:i',
   MONTH_DATE_FORMAT: 'MMM DD',
   TIME_FORMAT: 'HH:mm',
 };
@@ -101,7 +101,7 @@ const DEFAULT_FILTER_TYPE = FilterType.EVERYTHING;
 const DEFAULT_SORT_TYPE = SortingType.DAY.name;
 
 const EMPTY_POINT = {
-  type: pointTypes[0],
+  type: pointTypes[5],
   destination: '',
   dateFrom: null,
   dateTo: null,
@@ -113,7 +113,6 @@ const EMPTY_POINT = {
 const Mode = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING',
-  NEW: 'NEW',
 };
 
 export {
