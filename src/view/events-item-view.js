@@ -1,6 +1,6 @@
-import AbstractView from '../framework/view/abstract-view.js';
 import {DateFormat} from '../const.js';
 import {humanizePointDate, humanizePointDuration, isPointFavorite} from '../utils.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 function createOffers(array) {
   return array.map((element) => {
@@ -17,7 +17,7 @@ function createOffers(array) {
 }
 
 function createEventsItemTemplate(point, arrayDestinations, arrayOffers) {
-  const { type = '', destination = '', dateFrom = '', dateTo = '', basePrice = '', isFavorite = '', offers = [] } = point;
+  const { type, destination, dateFrom, dateTo, basePrice, isFavorite, offers} = point;
   const date = humanizePointDate(dateFrom, DateFormat.DATE_FORMAT);
   const dateDayFrom = humanizePointDate(dateFrom, DateFormat.DATE_TIME_FORMAT);
   const dateDayTo = humanizePointDate(dateTo, DateFormat.DATE_TIME_FORMAT);
@@ -26,7 +26,7 @@ function createEventsItemTemplate(point, arrayDestinations, arrayOffers) {
   const dateTimeTo = humanizePointDate(dateTo, DateFormat.TIME_FORMAT);
   const duration = humanizePointDuration(dateFrom, dateTo);
 
-  const matchingDestinations = arrayDestinations.filter((element) => destination === element.id)[0].name;
+  const matchingDestinations = destination ? arrayDestinations.filter((element) => destination === element.id)[0].name : '';
   const matchingOffers = arrayOffers.reduce((acc, currentValue) => {
     if (point.type && currentValue.type === point.type) {
       return [...acc, ...currentValue.offers.filter((o) => offers.includes(o.id))];

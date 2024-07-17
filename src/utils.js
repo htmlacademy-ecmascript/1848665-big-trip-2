@@ -1,6 +1,8 @@
 import dayjs from 'dayjs';
-import duration from 'dayjs/plugin/duration';
-dayjs.extend(duration);
+import isBetween from 'dayjs/plugin/isBetween';
+import {FilterType, SortingType} from './const.js';
+
+dayjs.extend(isBetween);
 
 /**
  * @returns {number}
@@ -18,40 +20,12 @@ function getRandomArrayElement(items) {
 }
 
 /**
- * @param {Array} items
- * @param {object} update
- * @returns {Array}
- */
-function updateItem(items, update) {
-  return items.map((item) => (item.id === update.id ? update : item));
-}
-
-/**
  * @param {object} date
  * @param {string} format
  * @returns {string}
  */
 function humanizePointDate(date, format) {
   return date ? dayjs(date).format(format) : '';
-}
-/**
- * @param {object} durationObj
- * @returns {string}
- */
-function formatedDuration(durationObj) {
-  const days = `${Math.floor(durationObj.asDays()).toString().padStart(2, '0')}D`;
-  const hours = `${durationObj.hours().toString().padStart(2, '0')}H`;
-  const minutes = `${durationObj.minutes().toString().padStart(2, '0')}M`;
-
-  if (durationObj.asDays() >= 1) {
-    return `${days} ${hours} ${minutes}`;
-  }
-
-  if (durationObj.asHours() >= 1) {
-    return `${hours} ${minutes}`;
-  }
-
-  return minutes;
 }
 
 /**
@@ -60,13 +34,22 @@ function formatedDuration(durationObj) {
  * @returns {string}
  */
 function humanizePointDuration(dateFrom, dateTo) {
-  if (!dateFrom || !dateTo) {
-    return '';
+  if (dateFrom && dateTo) {
+    const duration = dayjs(dateTo).diff(dayjs(dateFrom), 'minute');
+    if (duration < 60) {
+      return `${duration}M`;
+    } else if (duration < 1440) {
+      const hours = Math.floor(duration / 60);
+      const minutes = duration % 60;
+      return `${hours.toString().padStart(2, '0')}H ${minutes.toString().padStart(2, '0')}M`;
+    } else {
+      const days = Math.floor(duration / 1440);
+      const hours = Math.floor((duration % 1440) / 60);
+      const minutes = duration % 60;
+      return `${days}D ${hours.toString().padStart(2, '0')}H ${minutes.toString().padStart(2, '0')}M`;
+    }
   }
-  const startDate = dayjs(dateFrom);
-  const endDate = dayjs(dateTo);
-  const durationDiff = dayjs.duration(endDate.diff(startDate));
-  return formatedDuration(durationDiff);
+  return '';
 }
 
 /**
@@ -116,14 +99,47 @@ function isPointFavorite(isFavorite) {
   return isFavorite ? 'event__favorite-btn--active' : '';
 }
 
+/**
+ * @param {string} name
+ * @param {array} points
+ * @returns {array}
+ */
+const filterPoints = (name, points) => {
+  switch (name) {
+    case FilterType.EVERYTHING:
+      return points;
+    case FilterType.FUTURE:
+      return points.filter((item) => dayjs().isBefore(dayjs(item.dateFrom)));
+    case FilterType.PRESENT:
+      return points.filter((item) => dayjs().isBetween(dayjs(item.dateTo), dayjs(item.dateFrom)));
+    case FilterType.PAST:
+      return points.filter((item) => dayjs().isAfter(dayjs(item.dateTo)));
+  }
+};
+
+/**
+ * @param {string} name
+ * @param {array} points
+ * @returns {array}
+ */
+const sortPoints = (name, points) => {
+  switch (name) {
+    case SortingType.DAY.name:
+      return points.sort(sortByDate);
+    case SortingType.TIME.name:
+      return points.sort(sortByDuration);
+    case SortingType.PRICE.name:
+      return points.sort(sortByPrice);
+  }
+  return points;
+};
+
 export {
   getRandomNumber,
   getRandomArrayElement,
-  updateItem,
   humanizePointDate,
   humanizePointDuration,
   isPointFavorite,
-  sortByDate,
-  sortByDuration,
-  sortByPrice
+  filterPoints,
+  sortPoints,
 };
