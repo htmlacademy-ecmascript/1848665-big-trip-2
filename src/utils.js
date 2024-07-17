@@ -27,25 +27,6 @@ function getRandomArrayElement(items) {
 function humanizePointDate(date, format) {
   return date ? dayjs(date).format(format) : '';
 }
-/**
- * @param {object} durationObj
- * @returns {string}
- */
-function formatedDuration(durationObj) {
-  const days = `${Math.floor(durationObj.asDays()).toString().padStart(2, '0')}D`;
-  const hours = `${durationObj.hours().toString().padStart(2, '0')}H`;
-  const minutes = `${durationObj.minutes().toString().padStart(2, '0')}M`;
-
-  if (durationObj.asDays() >= 1) {
-    return `${days} ${hours} ${minutes}`;
-  }
-
-  if (durationObj.asHours() >= 1) {
-    return `${hours} ${minutes}`;
-  }
-
-  return minutes;
-}
 
 /**
  * @param {string} dateFrom
