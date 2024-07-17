@@ -4,7 +4,7 @@ import {nanoid} from 'nanoid';
 const mockPoints = [
   {
     basePrice: 140,
-    dateFrom: '2024-05-06T13:00:00.845Z',
+    dateFrom: '2024-05-02T13:00:00.845Z',
     dateTo: '2024-05-06T18:30:00.375Z',
     destination: 'ccc4cc44-c4cc-4cc44-c44c-4c444c444c44',
     isFavorite: false,
