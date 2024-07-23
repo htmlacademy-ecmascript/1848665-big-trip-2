@@ -1,3 +1,6 @@
+const BASE_URL = 'https://22.objects.htmlacademy.pro/big-trip';
+const AUTHORIZATION_STRING = 'Basic 1848665bigtrip2';
+
 /**
  * @fileoverview Constants and enums used throughout the event planning application
  * @module EventConstants
@@ -31,6 +34,11 @@ const DateFormat = {
   TIME_FORMAT: 'HH:mm',
 };
 
+const InfoMessageByAction = {
+  LOADING: 'Loading...',
+  ERROR: 'Failed to load latest route information',
+};
+
 /**
  * @enum {string}
  * @description Messages displayed when the event list is empty
@@ -49,6 +57,8 @@ const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
+  ERROR: 'ERROR',
 };
 
 /**
@@ -116,9 +126,19 @@ const Mode = {
   EDITING: 'EDITING',
 };
 
+const ApiMethod = {
+  GET: 'GET',
+  PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
+};
+
 export {
+  BASE_URL,
+  AUTHORIZATION_STRING,
   pointTypes,
   DateFormat,
+  InfoMessageByAction,
   EmptyListMessage,
   UpdateType,
   UserAction,
@@ -128,4 +148,5 @@ export {
   DEFAULT_SORT_TYPE,
   EMPTY_POINT,
   Mode,
+  ApiMethod,
 };

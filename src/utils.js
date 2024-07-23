@@ -5,21 +5,6 @@ import {FilterType, SortingType} from './const.js';
 dayjs.extend(isBetween);
 
 /**
- * @returns {number}
- */
-function getRandomNumber() {
-  return Math.floor(Math.random() * 10) + 1;
-}
-
-/**
- * @param {Array} items
- * @returns {*}
- */
-function getRandomArrayElement(items) {
-  return items[Math.floor(Math.random() * items.length)];
-}
-
-/**
  * @param {object} date
  * @param {string} format
  * @returns {string}
@@ -135,8 +120,6 @@ const sortPoints = (name, points) => {
 };
 
 export {
-  getRandomNumber,
-  getRandomArrayElement,
   humanizePointDate,
   humanizePointDuration,
   isPointFavorite,

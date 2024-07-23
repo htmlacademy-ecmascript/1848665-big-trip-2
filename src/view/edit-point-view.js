@@ -1,5 +1,4 @@
 import {pointTypes, DateFormat} from '../const.js';
-import {getRandomNumber} from '../utils.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
@@ -60,7 +59,7 @@ function createDestinationPictures(pointDestination) {
 }
 
 function createDestinationPicture(pointDestination) {
-  return pointDestination.pictures.map((element) => `<img class="event__photo" src="${element.src}${getRandomNumber()}" alt="${element.alt}">`).join('');
+  return pointDestination.pictures.map((element) => `<img class="event__photo" src="${element.src}" alt="${element.alt}">`).join('');
 }
 
 function createDestinationSection(pointDestination) {
