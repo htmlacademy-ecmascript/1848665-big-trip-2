@@ -98,7 +98,7 @@ function createTypeRadioButtons(array, checkedType) {
 }
 
 function createAdditionPointFormTemplate(point, arrayDestinations, arrayOffers) {
-  const {basePrice, dateFrom, dateTo, destination, offers, type} = point;
+  const {basePrice, dateFrom, dateTo, destination, offers, type, isDisabled, isSaving} = point;
   const pointDestination = arrayDestinations.filter((element) => destination === element.id)[0];
 
   return (
@@ -139,8 +139,8 @@ function createAdditionPointFormTemplate(point, arrayDestinations, arrayOffers) 
             </label>
             <input class="event__input event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
           </div>
-          <button class="event__save-btn btn btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn"type="reset">Cancel</button>
+          <button class="event__save-btn btn btn--blue" type="submit" ${(isDisabled) ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+          <button class="event__reset-btn"type="reset" ${(isDisabled) ? 'disabled' : ''}>Cancel</button>
         </header>
         <section class="event__details">
           ${createOffersContainer(arrayOffers, offers, type)}
@@ -179,11 +179,17 @@ export default class AdditionPointView extends AbstractStatefulView {
   }
 
   static parsePointToState(point) {
-    return {...point};
+    return {...point,
+      isDisabled: false,
+      isSaving: false,
+    };
   }
 
   static parseStateToPoint(state) {
-    return {...state};
+    const point = {...state};
+    delete point.isDisabled;
+    delete point.isSaving;
+    return point;
   }
 
   get template() {

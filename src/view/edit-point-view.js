@@ -98,7 +98,7 @@ function createTypeRadioButtons(array, checkedType) {
 }
 
 function createEditPointFormTemplate(point, arrayDestinations, arrayOffers) {
-  const {basePrice, dateFrom, dateTo, destination, offers, type} = point;
+  const {basePrice, dateFrom, dateTo, destination, offers, type, isDisabled, isSaving, isDeleting} = point;
   const pointDestination = arrayDestinations.filter((element) => destination === element.id)[0];
 
   return (
@@ -139,9 +139,9 @@ function createEditPointFormTemplate(point, arrayDestinations, arrayOffers) {
             </label>
             <input class="event__input event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
           </div>
-          <button class="event__save-btn btn btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Delete</button>
-          <button class="event__rollup-btn" type="button">
+          <button class="event__save-btn btn btn--blue" type="submit" ${(isDisabled) ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+          <button class="event__reset-btn" type="reset" ${(isDisabled) ? 'disabled' : ''}>${(isDeleting) ? 'Deleting...' : 'Delete'}</button>
+          <button class="event__rollup-btn" type="button" ${(isDisabled) ? 'disabled' : ''} ${(isDeleting) ? 'disabled' : ''}>
             <span class="visually-hidden">Open event</span>
           </button>
         </header>
@@ -176,11 +176,19 @@ export default class EditPointView extends AbstractStatefulView {
   }
 
   static parsePointToState(point) {
-    return {...point};
+    return {...point,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+    };
   }
 
   static parseStateToPoint(state) {
-    return {...state};
+    const point = {...state};
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
+    return point;
   }
 
   get template() {

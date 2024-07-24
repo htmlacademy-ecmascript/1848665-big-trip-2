@@ -132,6 +132,11 @@ const ApiMethod = {
   DELETE: 'DELETE',
 };
 
+const BlockerTimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
+
 export {
   BASE_URL,
   AUTHORIZATION_STRING,
@@ -148,4 +153,5 @@ export {
   EMPTY_POINT,
   Mode,
   ApiMethod,
+  BlockerTimeLimit,
 };

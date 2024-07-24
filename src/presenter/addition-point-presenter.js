@@ -43,6 +43,24 @@ export default class AdditionPointPresenter extends AbstractView {
     remove(prevAdditionPointComponent);
   }
 
+  setSaving() {
+    this.#additionPointComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this.#additionPointComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+      });
+    };
+
+    this.#additionPointComponent.shake(resetFormState);
+  }
+
   destroy() {
     remove(this.#additionPointComponent);
   }
@@ -68,7 +86,6 @@ export default class AdditionPointPresenter extends AbstractView {
   #handleCancelFormClose = () => {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
     this.#handleCancelForm();
-    this.destroy();
   };
 
   resetView() {
