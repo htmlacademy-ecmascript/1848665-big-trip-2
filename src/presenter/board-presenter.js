@@ -1,14 +1,14 @@
-import {DEFAULT_SORT_TYPE, DEFAULT_FILTER_TYPE, UpdateType, UserAction, EmptyListMessage, EMPTY_POINT} from '../const.js';
+import {DEFAULT_SORT_TYPE, DEFAULT_FILTER_TYPE, UpdateType, UserAction, EmptyListMessage, InfoMessageByAction, EMPTY_POINT, BlockerTimeLimit} from '../const.js';
 import {filterPoints, sortPoints} from '../utils.js';
 import {RenderPosition, remove, render} from '../framework/render.js';
 import PointPresenter from './point-presenter.js';
 import AdditionPointPresenter from './addition-point-presenter.js';
-
 import EventsListView from '../view/events-list-view.js';
 import TripInfoView from '../view/trip-info-view.js';
 import NewPointButton from '../view/new-point-button-view.js';
-import EventsEmptyStateView from '../view/events-empty-state-view.js';
+import InfoMessage from '../view/info-message-view.js';
 import SortView from '../view/sort-view.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 
 export default class BoardPresenter {
   #headerContainer = null;
@@ -16,11 +16,12 @@ export default class BoardPresenter {
   #pointsModel = null;
   #filtersModel = null;
 
-  #boardDestinations = [];
-  #boardOffers = [];
   #pointsPresenter = new Map();
   #currentSortType = DEFAULT_SORT_TYPE;
   #isFirstRender = false;
+  #isLoading = true;
+  #loadingComponent = null;
+  #errorMessageComponent = null;
 
   #eventsListComponent = new EventsListView();
   #tripInfoComponent = new TripInfoView();
@@ -29,6 +30,7 @@ export default class BoardPresenter {
   #eventsEmptyStateComponent = null;
   #sortComponent = null;
   #newPointPresenter = null;
+  #uiBlocker = null;
 
   constructor({headerContainer, eventsContainer, pointsModel, filtersModel}) {
     this.#headerContainer = headerContainer;
@@ -38,14 +40,23 @@ export default class BoardPresenter {
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filtersModel.addObserver(this.#handleModelEvent);
+
+    this.#uiBlocker = new UiBlocker({
+      lowerLimit: BlockerTimeLimit.LOWER_LIMIT,
+      upperLimit: BlockerTimeLimit.UPPER_LIMIT
+    });
   }
 
   init() {
     this.#renderNewPointButton();
-    this.#boardDestinations = [...this.#pointsModel.destinations];
-    this.#boardOffers = [...this.#pointsModel.offers];
 
-    this.#renderBoard();
+    if (this.#isLoading) {
+      remove(this.#errorMessageComponent);
+      this.#loadingComponent = new InfoMessage({message: InfoMessageByAction.LOADING});
+      render(this.#loadingComponent, this.#eventsContainer);
+    } else {
+      this.#renderBoard();
+    }
   }
 
   #handleModeChange = () => {
@@ -60,21 +71,38 @@ export default class BoardPresenter {
     }
   };
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
     switch (actionType) {
       case UserAction.UPDATE_TASK:
-        this.#pointsModel.updatePoint(updateType, update);
+        this.#pointsPresenter.get(update.id).setSaving();
+        try {
+          await this.#pointsModel.updatePoint(updateType, update);
+        } catch(err) {
+          this.#pointsPresenter.get(update.id).setAborting();
+        }
         break;
       case UserAction.ADD_TASK:
-        this.#pointsModel.addPoint(updateType, update);
-        this.#newPointPresenter.removeElement();
-        this.#isFirstRender = false;
-        this.#renderNewPointButton();
+        this.#newPointPresenter.setSaving();
+        try {
+          await this.#pointsModel.addPoint(updateType, update);
+          this.#newPointPresenter.removeElement();
+          this.#isFirstRender = false;
+          this.#renderNewPointButton();
+        } catch(err) {
+          this.#newPointPresenter.setAborting();
+        }
         break;
       case UserAction.DELETE_TASK:
-        this.#pointsModel.deletePoint(updateType, update);
+        this.#pointsPresenter.get(update.id).setDeleting();
+        try {
+          await this.#pointsModel.deletePoint(updateType, update);
+        } catch(err) {
+          this.#pointsPresenter.get(update.id).setAborting();
+        }
         break;
     }
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, data) => {
@@ -89,6 +117,18 @@ export default class BoardPresenter {
       case UpdateType.MAJOR:
         this.#clearBoard({resetSortType: true});
         this.#renderBoard();
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderBoard();
+        break;
+      case UpdateType.ERROR:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        remove(this.#sortComponent);
+        this.#clearBoard();
+        this.#renderErrorMessage();
         break;
     }
   };
@@ -116,8 +156,8 @@ export default class BoardPresenter {
     });
     this.#newPointPresenter.init({
       point: EMPTY_POINT,
-      destinations: this.#boardDestinations,
-      offers: this.#boardOffers,
+      destinations: this.#pointsModel.destinations,
+      offers: this.#pointsModel.offers,
     });
     this.#isFirstRender = true;
     this.#renderNewPointButton();
@@ -143,8 +183,13 @@ export default class BoardPresenter {
   }
 
   #renderEventsEmptyState() {
-    this.#eventsEmptyStateComponent = new EventsEmptyStateView({message: EmptyListMessage[this.#filtersModel.filter.toUpperCase()]});
+    this.#eventsEmptyStateComponent = new InfoMessage({message: EmptyListMessage[this.#filtersModel.filter.toUpperCase()]});
     render(this.#eventsEmptyStateComponent, this.#eventsContainer);
+  }
+
+  #renderErrorMessage() {
+    this.#errorMessageComponent = new InfoMessage({message: InfoMessageByAction.ERROR});
+    render(this.#errorMessageComponent, this.#eventsContainer);
   }
 
   #renderSort() {
@@ -178,8 +223,8 @@ export default class BoardPresenter {
     sortPoints(this.#currentSortType, filteredPoints);
     filteredPoints.forEach((point) => this.#renderPoint({
       point: point,
-      destinations: this.#boardDestinations,
-      offers: this.#boardOffers
+      destinations: this.#pointsModel.destinations,
+      offers: this.#pointsModel.offers,
     }));
   }
 
