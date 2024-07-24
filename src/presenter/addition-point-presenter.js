@@ -37,6 +37,7 @@ export default class AdditionPointPresenter extends AbstractView {
 
     if (prevAdditionPointComponent === null) {
       render(this.#additionPointComponent, this.#eventsListComponent.element, RenderPosition.AFTERBEGIN);
+      document.addEventListener('keydown', this.#escKeyDownHandler);
       return;
     }
     replace(this.#additionPointComponent, prevAdditionPointComponent);
@@ -63,15 +64,8 @@ export default class AdditionPointPresenter extends AbstractView {
 
   destroy() {
     remove(this.#additionPointComponent);
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
-
-  #escKeyDownHandler = (evt) => {
-    if (evt.key === 'Escape') {
-      evt.preventDefault();
-      document.removeEventListener('keydown', this.#escKeyDownHandler);
-    }
-  };
-
 
   #handleFormSubmit = (point) => {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
@@ -86,11 +80,25 @@ export default class AdditionPointPresenter extends AbstractView {
   #handleCancelFormClose = () => {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
     this.#handleCancelForm();
+    this.#resetForm();
+
   };
 
   resetView() {
+    this.#resetForm();
+  }
+
+  #resetForm() {
     if (this.#additionPointComponent !== null) {
       remove(this.#additionPointComponent);
     }
   }
+
+  #escKeyDownHandler = (evt) => {
+    if (evt.key === 'Escape') {
+      evt.preventDefault();
+      this.#handleCancelFormClose();
+      this.#resetForm();
+    }
+  };
 }

@@ -67,9 +67,14 @@ export default class PointPresenter {
     remove(prevFormPointComponent);
   }
 
+  #resetForm() {
+    this.#formPointComponent.reset(this.#point);
+  }
+
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
+      this.#resetForm();
       this.#replaceFormToCard();
       document.removeEventListener('keydown', this.#escKeyDownHandler);
     }
@@ -101,8 +106,6 @@ export default class PointPresenter {
   };
 
   #handleFormSubmit = (point) => {
-    this.#replaceFormToCard();
-    document.removeEventListener('keydown', this.#escKeyDownHandler);
     this.#handleDataChange(
       UserAction.UPDATE_TASK,
       UpdateType.MINOR,
@@ -110,9 +113,13 @@ export default class PointPresenter {
       this.#destinations,
       this.#offers,
     );
+    this.#resetForm();
+    this.#replaceFormToCard();
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
   #handleFormArrowClick = () => {
+    this.#resetForm();
     this.#replaceFormToCard();
     document.addEventListener('keydown', this.#escKeyDownHandler);
   };
@@ -142,7 +149,7 @@ export default class PointPresenter {
 
   setAborting() {
     if (this.#mode === Mode.DEFAULT) {
-      this.#pointComponent.shake();
+      this.#formPointComponent.shake();
       return;
     }
 

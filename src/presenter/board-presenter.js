@@ -166,8 +166,7 @@ export default class BoardPresenter {
   #handleCancelButtonClick = () => {
     this.#isFirstRender = false;
     this.#renderNewPointButton();
-    this.#clearBoard();
-    this.#renderBoard();
+    this.#newPointPresenter.resetView();
   };
 
   #renderNewPointButton() {

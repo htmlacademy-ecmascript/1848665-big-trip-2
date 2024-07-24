@@ -63,7 +63,7 @@ function createDestinationPicture(pointDestination) {
 }
 
 function createDestinationSection(pointDestination) {
-  if (pointDestination) {
+  if (pointDestination?.description || pointDestination?.pictures?.length) {
     return (
       `<section class="event__section event__section--destination">
         <h3 class="event__section-title event__section-title--destination">Destination</h3>
@@ -153,6 +153,7 @@ function createAdditionPointFormTemplate(point, arrayDestinations, arrayOffers) 
 
 export default class AdditionPointView extends AbstractStatefulView {
   #point = null;
+  #initialState = null;
   #destinations = null;
   #offers = null;
   #handleFormSubmit = null;
@@ -209,11 +210,11 @@ export default class AdditionPointView extends AbstractStatefulView {
   }
 
   reset(point) {
-    this.updateElement(AdditionPointView.parsePointToState(point));
+    this.updateElement(point);
+    this.removeElement();
   }
 
   _restoreHandlers() {
-    document.addEventListener('keydown', this.#escKeyDownHandler);
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__input--destination').addEventListener('input', this.#destinationInputHandler);
     this.element.querySelector('.event__input--price').addEventListener('change', this.#priceInputHandler);
@@ -236,16 +237,11 @@ export default class AdditionPointView extends AbstractStatefulView {
         {
           enableTime: true,
           dateFormat: DateFormat.DATE_TIME_FORM_POINTS,
-          defaultDate: this._state.dateFrom,
+          defaultDate: this._state.dateFrom || new Date(),
           onChange: this.#dueDateFromChangeHandler,
-          maxDate: this._state.dateTo,
+          maxDate: this._state.dateTo || new Date(),
           ['time_24hr']: true,
           allowInput: true,
-          onReady: (selectedDates) => {
-            this._setState({
-              dateFrom: selectedDates[0] || new Date()
-            });
-          },
         },
       );
     }
@@ -259,16 +255,11 @@ export default class AdditionPointView extends AbstractStatefulView {
         {
           enableTime: true,
           dateFormat: DateFormat.DATE_TIME_FORM_POINTS,
-          defaultDate: this._state.dateTo,
+          defaultDate: this._state.dateTo || new Date(),
           onChange: this.#dueDateToChangeHandler,
-          minDate: this._state.dateFrom,
+          minDate: this._state.dateFrom || new Date(),
           ['time_24hr']: true,
           allowInput: true,
-          onReady: (selectedDates) => {
-            this._setState({
-              dateTo: selectedDates[0] || new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
-            });
-          },
         },
       );
     }
@@ -331,15 +322,12 @@ export default class AdditionPointView extends AbstractStatefulView {
 
   #cancelClickHandler = (evt) => {
     evt.preventDefault();
-    this.#handleCancelButtonClick();
-  };
-
-  #escKeyDownHandler = (evt) => {
-    if (evt.key === 'Escape') {
-      evt.preventDefault();
-      this.#handleCancelButtonClick();
-      document.removeEventListener('keydown', this.#escKeyDownHandler);
+    if (this.#point) {
+      this.reset(this.#point);
+    } else {
+      this.reset({});
     }
+    this.#handleCancelButtonClick();
   };
 
   #priceInputHandler = (evt) => {
