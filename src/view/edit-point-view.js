@@ -91,7 +91,7 @@ function createTypeRadioButtons(array, checkedType) {
     return (
       `<div class="event__type-item">
         <input id="event-type-${element.toLowerCase()}" class="event__type-input visually-hidden" type="radio" name="event-type" value="${element.toLowerCase()}" ${isChecked}>
-        <label class="event__type-label event__type-label--${element.toLowerCase()}" for="${element.toLowerCase()}">${element}</label>
+        <label for="event-type-${element.toLowerCase()}" class="event__type-label event__type-label--${element.toLowerCase()}" for="${element.toLowerCase()}">${element}</label>
       </div>`
     );
   }).join('');

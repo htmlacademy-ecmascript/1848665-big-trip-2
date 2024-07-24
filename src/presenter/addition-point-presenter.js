@@ -60,7 +60,7 @@ export default class AdditionPointPresenter extends AbstractView {
     this.#handleDataChange(
       UserAction.ADD_TASK,
       UpdateType.MINOR,
-      {...point},
+      point,
     );
     this.destroy();
   };

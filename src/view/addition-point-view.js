@@ -1,6 +1,5 @@
 import {pointTypes, DateFormat} from '../const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import {nanoid} from 'nanoid';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -91,8 +90,8 @@ function createTypeRadioButtons(array, checkedType) {
     const isChecked = element.toLowerCase() === checkedType ? 'checked' : '';
     return (
       `<div class="event__type-item">
-        <input id="${element.toLowerCase()}" class="event__type-input visually-hidden" type="radio" name="event-type" value="${element.toLowerCase()}" ${isChecked}>
-        <label class="event__type-label event__type-label--${element.toLowerCase()}" for="${element.toLowerCase()}">${element}</label>
+        <input id="event-type-${element.toLowerCase()}" class="event__type-input visually-hidden" type="radio" name="event-type" value="${element.toLowerCase()}" ${isChecked}>
+        <label for="event-type-${element.toLowerCase()}" class="event__type-label event__type-label--${element.toLowerCase()}" for="${element.toLowerCase()}">${element}</label>
       </div>`
     );
   }).join('');
@@ -174,10 +173,6 @@ export default class AdditionPointView extends AbstractStatefulView {
     }
     if (!this._state.dateTo) {
       this._state.dateTo = new Date(new Date().getTime() + 24 * 60 * 60 * 1000); // +1 день
-    }
-
-    if (!this._state.id) {
-      this._state.id = nanoid();
     }
 
     this._restoreHandlers();

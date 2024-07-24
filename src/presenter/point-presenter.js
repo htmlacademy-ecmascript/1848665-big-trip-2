@@ -83,7 +83,7 @@ export default class PointPresenter {
     this.#handleDataChange(
       UserAction.DELETE_TASK,
       UpdateType.MINOR,
-      {...point},
+      point,
       this.#destinations,
       this.#offers,
     );
@@ -105,7 +105,7 @@ export default class PointPresenter {
     this.#handleDataChange(
       UserAction.UPDATE_TASK,
       UpdateType.MINOR,
-      {...point},
+      point,
       this.#destinations,
       this.#offers,
     );
