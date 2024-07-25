@@ -23,7 +23,7 @@ export default class BoardPresenter {
   #loadingComponent = null;
   #errorMessageComponent = null;
 
-  #eventsListComponent = new EventsListView();
+  #eventsListComponent = null;
   #tripInfoComponent = new TripInfoView();
   #newPointButtonComponent = null;
 
@@ -121,6 +121,7 @@ export default class BoardPresenter {
       case UpdateType.INIT:
         this.#isLoading = false;
         remove(this.#loadingComponent);
+        this.#clearBoard();
         this.#renderBoard();
         break;
       case UpdateType.ERROR:
@@ -142,10 +143,18 @@ export default class BoardPresenter {
   };
 
   #handleNewPointButtonClick = () => {
+    if (!this.#eventsListComponent) {
+      this.#eventsListComponent = new EventsListView();
+      render(this.#eventsListComponent, this.#eventsContainer);
+    }
     this.#currentSortType = DEFAULT_SORT_TYPE;
     this.#filtersModel.setFilter(UpdateType.MINOR, DEFAULT_FILTER_TYPE);
     this.#renderCreatePoint();
     this.#handleModeChange();
+
+    if (this.#eventsEmptyStateComponent) {
+      remove(this.#eventsEmptyStateComponent);
+    }
   };
 
   #renderCreatePoint() {
@@ -215,9 +224,11 @@ export default class BoardPresenter {
       this.#renderEventsEmptyState();
       return;
     }
+    this.#eventsListComponent = new EventsListView();
+    render(this.#eventsListComponent, this.#eventsContainer);
     render(this.#tripInfoComponent, this.#headerContainer, RenderPosition.AFTERBEGIN);
     this.#renderSort();
-    render(this.#eventsListComponent, this.#eventsContainer);
+
     sortPoints(this.#currentSortType, filteredPoints);
     filteredPoints.forEach((point) => this.#renderPoint({
       point: point,
