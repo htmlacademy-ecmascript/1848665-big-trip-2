@@ -170,10 +170,10 @@ export default class AdditionPointView extends AbstractStatefulView {
     this.#handleCancelForm = onCancelForm;
 
     if (!this._state.dateFrom) {
-      this._state.dateFrom = new Date();
+      this._state.dateFrom = '';
     }
     if (!this._state.dateTo) {
-      this._state.dateTo = new Date(new Date().getTime() + 24 * 60 * 60 * 1000); // +1 день
+      this._state.dateTo = '';
     }
 
     this._restoreHandlers();
@@ -209,11 +209,6 @@ export default class AdditionPointView extends AbstractStatefulView {
     }
   }
 
-  // reset(point) {
-  //   this.updateElement(point);
-  //   this.removeElement();
-  // }
-
   _restoreHandlers() {
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__input--destination').addEventListener('input', this.#destinationInputHandler);
@@ -237,7 +232,7 @@ export default class AdditionPointView extends AbstractStatefulView {
         {
           enableTime: true,
           dateFormat: DateFormat.DATE_TIME_FORM_POINTS,
-          defaultDate: this._state.dateFrom || new Date(),
+          defaultDate: '',
           onChange: this.#dueDateFromChangeHandler,
           maxDate: this._state.dateTo || new Date(),
           ['time_24hr']: true,
@@ -255,7 +250,7 @@ export default class AdditionPointView extends AbstractStatefulView {
         {
           enableTime: true,
           dateFormat: DateFormat.DATE_TIME_FORM_POINTS,
-          defaultDate: this._state.dateTo || new Date(),
+          defaultDate: '',
           onChange: this.#dueDateToChangeHandler,
           minDate: this._state.dateFrom || new Date(),
           ['time_24hr']: true,
@@ -319,16 +314,6 @@ export default class AdditionPointView extends AbstractStatefulView {
       offers: [],
     });
   };
-
-  // #cancelClickHandler = (evt) => {
-  //   evt.preventDefault();
-  //   if (this.#point) {
-  //     this.reset(this.#point);
-  //   } else {
-  //     this.reset({});
-  //   }
-  //   this.#handleCancelForm();
-  // };
 
   #priceInputHandler = (evt) => {
     const numericValue = evt.target.value.replace(/\D/g, '') || 0;
