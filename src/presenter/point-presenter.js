@@ -124,11 +124,6 @@ export default class PointPresenter {
     document.addEventListener('keydown', this.#escKeyDownHandler);
   };
 
-  destroy() {
-    remove(this.#pointComponent);
-    remove(this.#formPointComponent);
-  }
-
   setSaving() {
     if (this.#mode === Mode.EDITING) {
       this.#formPointComponent.updateElement({
@@ -181,5 +176,10 @@ export default class PointPresenter {
       this.#formPointComponent.reset(this.#point);
       this.#replaceFormToCard();
     }
+  }
+
+  destroy() {
+    remove(this.#pointComponent);
+    remove(this.#formPointComponent);
   }
 }

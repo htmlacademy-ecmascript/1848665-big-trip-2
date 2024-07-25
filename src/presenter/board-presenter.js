@@ -65,7 +65,7 @@ export default class BoardPresenter {
 
   #handleAdditionModeChange = () => {
     if (this.#newPointPresenter !== null) {
-      this.#newPointPresenter.resetView();
+      this.#newPointPresenter.destroy();
       this.#isFirstRender = false;
       this.#renderNewPointButton();
     }
@@ -152,7 +152,7 @@ export default class BoardPresenter {
     this.#newPointPresenter = new AdditionPointPresenter({
       eventsListComponent: this.#eventsListComponent,
       onDataChange: this.#handleViewAction,
-      onCancelButtonClick: this.#handleCancelButtonClick,
+      onCancelClick: this.#handleCancelClick,
     });
     this.#newPointPresenter.init({
       point: EMPTY_POINT,
@@ -163,10 +163,9 @@ export default class BoardPresenter {
     this.#renderNewPointButton();
   }
 
-  #handleCancelButtonClick = () => {
+  #handleCancelClick = () => {
     this.#isFirstRender = false;
     this.#renderNewPointButton();
-    this.#newPointPresenter.resetView();
   };
 
   #renderNewPointButton() {

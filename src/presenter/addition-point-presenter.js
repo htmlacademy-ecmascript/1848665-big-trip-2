@@ -13,11 +13,11 @@ export default class AdditionPointPresenter extends AbstractView {
   #destinations = null;
   #offers = null;
 
-  constructor({eventsListComponent, onDataChange, onCancelButtonClick}) {
+  constructor({eventsListComponent, onDataChange, onCancelClick}) {
     super();
     this.#eventsListComponent = eventsListComponent;
     this.#handleDataChange = onDataChange;
-    this.#handleCancelForm = onCancelButtonClick;
+    this.#handleCancelForm = onCancelClick;
   }
 
   init({point, destinations, offers}) {
@@ -32,7 +32,7 @@ export default class AdditionPointPresenter extends AbstractView {
       destinations: this.#destinations,
       offers: this.#offers,
       onFormSubmit: this.#handleFormSubmit,
-      onCancelButtonClick: this.#handleCancelFormClose,
+      onCancelForm: this.#cancelFormHandler,
     });
 
     if (prevAdditionPointComponent === null) {
@@ -41,6 +41,7 @@ export default class AdditionPointPresenter extends AbstractView {
       return;
     }
     replace(this.#additionPointComponent, prevAdditionPointComponent);
+    document.addEventListener('keydown', this.#escKeyDownHandler);
     remove(prevAdditionPointComponent);
   }
 
@@ -62,11 +63,6 @@ export default class AdditionPointPresenter extends AbstractView {
     this.#additionPointComponent.shake(resetFormState);
   }
 
-  destroy() {
-    remove(this.#additionPointComponent);
-    document.removeEventListener('keydown', this.#escKeyDownHandler);
-  }
-
   #handleFormSubmit = (point) => {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
     this.#handleDataChange(
@@ -77,28 +73,22 @@ export default class AdditionPointPresenter extends AbstractView {
     this.destroy();
   };
 
-  #handleCancelFormClose = () => {
+  #cancelFormHandler = () => {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
     this.#handleCancelForm();
-    this.#resetForm();
-
+    this.destroy();
   };
-
-  resetView() {
-    this.#resetForm();
-  }
-
-  #resetForm() {
-    if (this.#additionPointComponent !== null) {
-      remove(this.#additionPointComponent);
-    }
-  }
 
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
-      this.#handleCancelFormClose();
-      this.#resetForm();
+      document.removeEventListener('keydown', this.#escKeyDownHandler);
+      this.#handleCancelForm();
+      this.destroy();
     }
   };
+
+  destroy() {
+    remove(this.#additionPointComponent);
+  }
 }

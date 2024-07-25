@@ -157,17 +157,17 @@ export default class AdditionPointView extends AbstractStatefulView {
   #destinations = null;
   #offers = null;
   #handleFormSubmit = null;
-  #handleCancelButtonClick = null;
+  #handleCancelForm = null;
   #dateFromDatapicker = null;
   #dateToDatapicker = null;
 
-  constructor({point, destinations, offers, onFormSubmit, onCancelButtonClick}) {
+  constructor({point, destinations, offers, onFormSubmit, onCancelForm}) {
     super();
     this._setState(AdditionPointView.parsePointToState(point));
     this.#destinations = destinations;
     this.#offers = offers;
     this.#handleFormSubmit = onFormSubmit;
-    this.#handleCancelButtonClick = onCancelButtonClick;
+    this.#handleCancelForm = onCancelForm;
 
     if (!this._state.dateFrom) {
       this._state.dateFrom = new Date();
@@ -209,10 +209,10 @@ export default class AdditionPointView extends AbstractStatefulView {
     }
   }
 
-  reset(point) {
-    this.updateElement(point);
-    this.removeElement();
-  }
+  // reset(point) {
+  //   this.updateElement(point);
+  //   this.removeElement();
+  // }
 
   _restoreHandlers() {
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
@@ -224,7 +224,7 @@ export default class AdditionPointView extends AbstractStatefulView {
     this.element.querySelectorAll('.event__type-input').forEach((input) => {
       input.addEventListener('change', this.#typeChangeHandler);
     });
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#cancelClickHandler);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#handleCancelForm);
     this.#setDateFromDatapicker();
     this.#setDateToDatapicker();
   }
@@ -320,15 +320,15 @@ export default class AdditionPointView extends AbstractStatefulView {
     });
   };
 
-  #cancelClickHandler = (evt) => {
-    evt.preventDefault();
-    if (this.#point) {
-      this.reset(this.#point);
-    } else {
-      this.reset({});
-    }
-    this.#handleCancelButtonClick();
-  };
+  // #cancelClickHandler = (evt) => {
+  //   evt.preventDefault();
+  //   if (this.#point) {
+  //     this.reset(this.#point);
+  //   } else {
+  //     this.reset({});
+  //   }
+  //   this.#handleCancelForm();
+  // };
 
   #priceInputHandler = (evt) => {
     const numericValue = evt.target.value.replace(/\D/g, '') || 0;
