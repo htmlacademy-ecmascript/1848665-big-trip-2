@@ -23,7 +23,7 @@ export default class BoardPresenter {
   #loadingComponent = null;
   #errorMessageComponent = null;
 
-  #eventsListComponent = new EventsListView();
+  #eventsListComponent = null;
   #tripInfoComponent = new TripInfoView();
   #newPointButtonComponent = null;
 
@@ -65,7 +65,7 @@ export default class BoardPresenter {
 
   #handleAdditionModeChange = () => {
     if (this.#newPointPresenter !== null) {
-      this.#newPointPresenter.resetView();
+      this.#newPointPresenter.destroy();
       this.#isFirstRender = false;
       this.#renderNewPointButton();
     }
@@ -86,7 +86,7 @@ export default class BoardPresenter {
         this.#newPointPresenter.setSaving();
         try {
           await this.#pointsModel.addPoint(updateType, update);
-          this.#newPointPresenter.removeElement();
+          this.#newPointPresenter.destroy();
           this.#isFirstRender = false;
           this.#renderNewPointButton();
         } catch(err) {
@@ -121,6 +121,7 @@ export default class BoardPresenter {
       case UpdateType.INIT:
         this.#isLoading = false;
         remove(this.#loadingComponent);
+        this.#clearBoard();
         this.#renderBoard();
         break;
       case UpdateType.ERROR:
@@ -142,17 +143,25 @@ export default class BoardPresenter {
   };
 
   #handleNewPointButtonClick = () => {
+    if (!this.#eventsListComponent) {
+      this.#eventsListComponent = new EventsListView();
+      render(this.#eventsListComponent, this.#eventsContainer);
+    }
     this.#currentSortType = DEFAULT_SORT_TYPE;
     this.#filtersModel.setFilter(UpdateType.MINOR, DEFAULT_FILTER_TYPE);
     this.#renderCreatePoint();
     this.#handleModeChange();
+
+    if (this.#eventsEmptyStateComponent) {
+      remove(this.#eventsEmptyStateComponent);
+    }
   };
 
   #renderCreatePoint() {
     this.#newPointPresenter = new AdditionPointPresenter({
       eventsListComponent: this.#eventsListComponent,
       onDataChange: this.#handleViewAction,
-      onCancelButtonClick: this.#handleCancelButtonClick,
+      onCancelClick: this.#handleCancelClick,
     });
     this.#newPointPresenter.init({
       point: EMPTY_POINT,
@@ -163,7 +172,7 @@ export default class BoardPresenter {
     this.#renderNewPointButton();
   }
 
-  #handleCancelButtonClick = () => {
+  #handleCancelClick = () => {
     this.#isFirstRender = false;
     this.#renderNewPointButton();
     this.#clearBoard();
@@ -217,9 +226,11 @@ export default class BoardPresenter {
       this.#renderEventsEmptyState();
       return;
     }
-    render(this.#tripInfoComponent, this.#headerContainer, RenderPosition.AFTERBEGIN);
     this.#renderSort();
+    this.#eventsListComponent = new EventsListView();
     render(this.#eventsListComponent, this.#eventsContainer);
+    render(this.#tripInfoComponent, this.#headerContainer, RenderPosition.AFTERBEGIN);
+
     sortPoints(this.#currentSortType, filteredPoints);
     filteredPoints.forEach((point) => this.#renderPoint({
       point: point,

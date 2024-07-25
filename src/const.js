@@ -1,4 +1,4 @@
-const BASE_URL = 'https://22.objects.htmlacademy.pro/big-trip';
+const BASE_URL = 'https://23.objects.htmlacademy.pro/big-trip';
 const AUTHORIZATION_STRING = 'Basic 1848665bigtrip2';
 
 /**
@@ -113,8 +113,8 @@ const DEFAULT_SORT_TYPE = SortingType.DAY.name;
 const EMPTY_POINT = {
   type: pointTypes[5].toLowerCase(),
   destination: '',
-  dateFrom: null,
-  dateTo: null,
+  dateFrom: '',
+  dateTo: '',
   basePrice: 0,
   offers: [],
   isFavorite: false,

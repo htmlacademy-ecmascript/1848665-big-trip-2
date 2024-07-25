@@ -67,9 +67,14 @@ export default class PointPresenter {
     remove(prevFormPointComponent);
   }
 
+  #resetForm() {
+    this.#formPointComponent.reset(this.#point);
+  }
+
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
+      this.#resetForm();
       this.#replaceFormToCard();
       document.removeEventListener('keydown', this.#escKeyDownHandler);
     }
@@ -90,19 +95,17 @@ export default class PointPresenter {
     );
   };
 
-  #handleFavoriteClick = () => {
+  #handleFavoriteClick = (point) => {
     this.#handleDataChange(
       UserAction.UPDATE_TASK,
       UpdateType.MINOR,
-      {...this.#point, isFavorite: !this.#point.isFavorite},
+      {...point, isFavorite: !point.isFavorite},
       this.#destinations,
       this.#offers,
     );
   };
 
   #handleFormSubmit = (point) => {
-    this.#replaceFormToCard();
-    document.removeEventListener('keydown', this.#escKeyDownHandler);
     this.#handleDataChange(
       UserAction.UPDATE_TASK,
       UpdateType.MINOR,
@@ -113,14 +116,10 @@ export default class PointPresenter {
   };
 
   #handleFormArrowClick = () => {
+    this.#resetForm();
     this.#replaceFormToCard();
     document.addEventListener('keydown', this.#escKeyDownHandler);
   };
-
-  destroy() {
-    remove(this.#pointComponent);
-    remove(this.#formPointComponent);
-  }
 
   setSaving() {
     if (this.#mode === Mode.EDITING) {
@@ -174,5 +173,10 @@ export default class PointPresenter {
       this.#formPointComponent.reset(this.#point);
       this.#replaceFormToCard();
     }
+  }
+
+  destroy() {
+    remove(this.#pointComponent);
+    remove(this.#formPointComponent);
   }
 }

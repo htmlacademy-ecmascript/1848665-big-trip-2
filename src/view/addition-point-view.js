@@ -63,7 +63,7 @@ function createDestinationPicture(pointDestination) {
 }
 
 function createDestinationSection(pointDestination) {
-  if (pointDestination) {
+  if (pointDestination?.description || pointDestination?.pictures?.length) {
     return (
       `<section class="event__section event__section--destination">
         <h3 class="event__section-title event__section-title--destination">Destination</h3>
@@ -120,27 +120,27 @@ function createAdditionPointFormTemplate(point, arrayDestinations, arrayOffers) 
           </div>
           <div class="event__field-group event__field-group--destination">
             <label class="event__label event__type-output" for="event-destination-1">${type}</label>
-            <input class="event__input event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${pointDestination ? pointDestination.name : ''}" list="destination-list-1"  autocomplete="off" required>
+            <input class="event__input event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${pointDestination ? pointDestination.name : ''}" list="destination-list-1"  autocomplete="off" required ${(isDisabled) ? 'disabled' : ''}>
             <datalist id="destination-list-1">
               ${createDestinationOptions(arrayDestinations)}
             </datalist>
           </div>
           <div class="event__field-group event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">From</label>
-            <input class="event__input event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom}">
+            <input class="event__input event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom}" ${(isDisabled) ? 'disabled' : ''}>
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">To</label>
-            <input class="event__input event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo}">
+            <input class="event__input event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo}" ${(isDisabled) ? 'disabled' : ''}>
           </div>
           <div class="event__field-group event__field-group--price">
             <label class="event__label" for="event-price-1">
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+            <input class="event__input event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}" ${(isDisabled) ? 'disabled' : ''}>
           </div>
-          <button class="event__save-btn btn btn--blue" type="submit" ${(isDisabled) ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
-          <button class="event__reset-btn"type="reset" ${(isDisabled) ? 'disabled' : ''}>Cancel</button>
+          <button class="event__save-btn btn btn--blue" type="submit">${isSaving ? 'Saving...' : 'Save'}</button>
+          <button class="event__reset-btn"type="reset">Cancel</button>
         </header>
         <section class="event__details">
           ${createOffersContainer(arrayOffers, offers, type)}
@@ -156,24 +156,17 @@ export default class AdditionPointView extends AbstractStatefulView {
   #destinations = null;
   #offers = null;
   #handleFormSubmit = null;
-  #handleCancelButtonClick = null;
+  #handleCancelForm = null;
   #dateFromDatapicker = null;
   #dateToDatapicker = null;
 
-  constructor({point, destinations, offers, onFormSubmit, onCancelButtonClick}) {
+  constructor({point, destinations, offers, onFormSubmit, onCancelForm}) {
     super();
     this._setState(AdditionPointView.parsePointToState(point));
     this.#destinations = destinations;
     this.#offers = offers;
     this.#handleFormSubmit = onFormSubmit;
-    this.#handleCancelButtonClick = onCancelButtonClick;
-
-    if (!this._state.dateFrom) {
-      this._state.dateFrom = new Date();
-    }
-    if (!this._state.dateTo) {
-      this._state.dateTo = new Date(new Date().getTime() + 24 * 60 * 60 * 1000); // +1 день
-    }
+    this.#handleCancelForm = onCancelForm;
 
     this._restoreHandlers();
   }
@@ -208,22 +201,17 @@ export default class AdditionPointView extends AbstractStatefulView {
     }
   }
 
-  reset(point) {
-    this.updateElement(AdditionPointView.parsePointToState(point));
-  }
-
   _restoreHandlers() {
-    document.addEventListener('keydown', this.#escKeyDownHandler);
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__input--destination').addEventListener('input', this.#destinationInputHandler);
     this.element.querySelector('.event__input--price').addEventListener('change', this.#priceInputHandler);
-    this.element.querySelectorAll('.event__offer-checkbox').forEach((input) => {
-      input.addEventListener('change', this.#offersChangeHandler);
+    this.element.querySelectorAll('.event__offer-checkbox').forEach((checkbox) => {
+      checkbox.addEventListener('change', this.#offersChangeHandler);
     });
     this.element.querySelectorAll('.event__type-input').forEach((input) => {
       input.addEventListener('change', this.#typeChangeHandler);
     });
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#cancelClickHandler);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#handleCancelForm);
     this.#setDateFromDatapicker();
     this.#setDateToDatapicker();
   }
@@ -238,14 +226,9 @@ export default class AdditionPointView extends AbstractStatefulView {
           dateFormat: DateFormat.DATE_TIME_FORM_POINTS,
           defaultDate: this._state.dateFrom,
           onChange: this.#dueDateFromChangeHandler,
-          maxDate: this._state.dateTo,
+          maxDate: this._state.dateTo || new Date(),
           ['time_24hr']: true,
           allowInput: true,
-          onReady: (selectedDates) => {
-            this._setState({
-              dateFrom: selectedDates[0] || new Date()
-            });
-          },
         },
       );
     }
@@ -261,14 +244,9 @@ export default class AdditionPointView extends AbstractStatefulView {
           dateFormat: DateFormat.DATE_TIME_FORM_POINTS,
           defaultDate: this._state.dateTo,
           onChange: this.#dueDateToChangeHandler,
-          minDate: this._state.dateFrom,
+          minDate: this._state.dateFrom || new Date(),
           ['time_24hr']: true,
           allowInput: true,
-          onReady: (selectedDates) => {
-            this._setState({
-              dateTo: selectedDates[0] || new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
-            });
-          },
         },
       );
     }
@@ -329,22 +307,9 @@ export default class AdditionPointView extends AbstractStatefulView {
     });
   };
 
-  #cancelClickHandler = (evt) => {
-    evt.preventDefault();
-    this.#handleCancelButtonClick();
-  };
-
-  #escKeyDownHandler = (evt) => {
-    if (evt.key === 'Escape') {
-      evt.preventDefault();
-      this.#handleCancelButtonClick();
-      document.removeEventListener('keydown', this.#escKeyDownHandler);
-    }
-  };
-
   #priceInputHandler = (evt) => {
     const numericValue = evt.target.value.replace(/\D/g, '') || 0;
-    this.updateElement({
+    this._setState({
       basePrice: numericValue,
     });
   };

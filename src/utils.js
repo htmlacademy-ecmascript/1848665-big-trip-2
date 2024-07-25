@@ -31,7 +31,7 @@ function humanizePointDuration(dateFrom, dateTo) {
       const days = Math.floor(duration / 1440);
       const hours = Math.floor((duration % 1440) / 60);
       const minutes = duration % 60;
-      return `${days}D ${hours.toString().padStart(2, '0')}H ${minutes.toString().padStart(2, '0')}M`;
+      return `${days.toString().padStart(2, '0')}D ${hours.toString().padStart(2, '0')}H ${minutes.toString().padStart(2, '0')}M`;
     }
   }
   return '';
