@@ -120,28 +120,28 @@ function createEditPointFormTemplate(point, arrayDestinations, arrayOffers) {
           </div>
           <div class="event__field-group event__field-group--destination">
             <label class="event__label event__type-output" for="event-destination-1">${type}</label>
-            <input class="event__input event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${pointDestination.name}" list="destination-list-1" autocomplete="off">
+            <input class="event__input event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${pointDestination.name}" list="destination-list-1" autocomplete="off" ${(isDisabled) ? 'disabled' : ''}>
             <datalist id="destination-list-1">
               ${createDestinationOptions(arrayDestinations)}
             </datalist>
           </div>
           <div class="event__field-group event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">From</label>
-            <input class="event__input event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom}">
+            <input class="event__input event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom}" ${(isDisabled) ? 'disabled' : ''}>
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">To</label>
-            <input class="event__input event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo}">
+            <input class="event__input event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo}" ${(isDisabled) ? 'disabled' : ''}>
           </div>
           <div class="event__field-group event__field-group--price">
             <label class="event__label" for="event-price-1">
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+            <input class="event__input event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}" ${(isDisabled) ? 'disabled' : ''}>
           </div>
           <button class="event__save-btn btn btn--blue" type="submit" ${(isDisabled) ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
           <button class="event__reset-btn" type="reset" ${(isDisabled) ? 'disabled' : ''}>${(isDeleting) ? 'Deleting...' : 'Delete'}</button>
-          <button class="event__rollup-btn" type="button" ${(isDisabled) ? 'disabled' : ''} ${(isDeleting) ? 'disabled' : ''}>
+          <button class="event__rollup-btn" type="button" ${(isDisabled) ? 'disabled' : ''}>
             <span class="visually-hidden">Open event</span>
           </button>
         </header>
@@ -216,8 +216,8 @@ export default class EditPointView extends AbstractStatefulView {
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formClickHandler);
     this.element.querySelector('.event__input--destination').addEventListener('input', this.#destinationInputHandler);
     this.element.querySelector('.event__input--price').addEventListener('change', this.#priceInputHandler);
-    this.element.querySelectorAll('.event__offer-checkbox').forEach((input) => {
-      input.addEventListener('change', this.#offersChangeHandler);
+    this.element.querySelectorAll('.event__offer-checkbox').forEach((checkbox) => {
+      checkbox.addEventListener('change', this.#offersChangeHandler);
     });
     this.element.querySelectorAll('.event__type-input').forEach((input) => {
       input.addEventListener('change', this.#typeChangeHandler);
@@ -274,7 +274,6 @@ export default class EditPointView extends AbstractStatefulView {
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
     this.#handleFormSubmit(EditPointView.parseStateToPoint(this._state));
-    this.reset(EditPointView.parsePointToState(this._state));
   };
 
   #formClickHandler = (evt) => {

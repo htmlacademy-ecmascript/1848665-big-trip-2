@@ -113,8 +113,8 @@ const DEFAULT_SORT_TYPE = SortingType.DAY.name;
 const EMPTY_POINT = {
   type: pointTypes[5].toLowerCase(),
   destination: '',
-  dateFrom: null,
-  dateTo: null,
+  dateFrom: '',
+  dateTo: '',
   basePrice: 0,
   offers: [],
   isFavorite: false,

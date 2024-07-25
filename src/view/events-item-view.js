@@ -104,6 +104,6 @@ export default class EventsItemView extends AbstractView {
 
   #favoriteClickHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFavoriteClick();
+    this.#handleFavoriteClick(this.#point);
   };
 }

@@ -64,13 +64,11 @@ export default class AdditionPointPresenter extends AbstractView {
   }
 
   #handleFormSubmit = (point) => {
-    document.removeEventListener('keydown', this.#escKeyDownHandler);
     this.#handleDataChange(
       UserAction.ADD_TASK,
       UpdateType.MINOR,
       point,
     );
-    this.destroy();
   };
 
   #cancelFormHandler = () => {

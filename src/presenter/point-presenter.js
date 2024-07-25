@@ -95,11 +95,11 @@ export default class PointPresenter {
     );
   };
 
-  #handleFavoriteClick = () => {
+  #handleFavoriteClick = (point) => {
     this.#handleDataChange(
       UserAction.UPDATE_TASK,
       UpdateType.MINOR,
-      {...this.#point, isFavorite: !this.#point.isFavorite},
+      {...point, isFavorite: !point.isFavorite},
       this.#destinations,
       this.#offers,
     );
@@ -113,9 +113,6 @@ export default class PointPresenter {
       this.#destinations,
       this.#offers,
     );
-    this.#resetForm();
-    this.#replaceFormToCard();
-    document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
   #handleFormArrowClick = () => {
@@ -144,7 +141,7 @@ export default class PointPresenter {
 
   setAborting() {
     if (this.#mode === Mode.DEFAULT) {
-      this.#formPointComponent.shake();
+      this.#pointComponent.shake();
       return;
     }
 

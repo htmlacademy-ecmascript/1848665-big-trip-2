@@ -86,7 +86,7 @@ export default class BoardPresenter {
         this.#newPointPresenter.setSaving();
         try {
           await this.#pointsModel.addPoint(updateType, update);
-          this.#newPointPresenter.removeElement();
+          this.#newPointPresenter.destroy();
           this.#isFirstRender = false;
           this.#renderNewPointButton();
         } catch(err) {
@@ -175,6 +175,8 @@ export default class BoardPresenter {
   #handleCancelClick = () => {
     this.#isFirstRender = false;
     this.#renderNewPointButton();
+    this.#clearBoard();
+    this.#renderBoard();
   };
 
   #renderNewPointButton() {
@@ -224,10 +226,10 @@ export default class BoardPresenter {
       this.#renderEventsEmptyState();
       return;
     }
+    this.#renderSort();
     this.#eventsListComponent = new EventsListView();
     render(this.#eventsListComponent, this.#eventsContainer);
     render(this.#tripInfoComponent, this.#headerContainer, RenderPosition.AFTERBEGIN);
-    this.#renderSort();
 
     sortPoints(this.#currentSortType, filteredPoints);
     filteredPoints.forEach((point) => this.#renderPoint({
