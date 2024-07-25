@@ -139,8 +139,8 @@ function createAdditionPointFormTemplate(point, arrayDestinations, arrayOffers) 
             </label>
             <input class="event__input event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}" ${(isDisabled) ? 'disabled' : ''}>
           </div>
-          <button class="event__save-btn btn btn--blue" type="submit" ${(isDisabled) ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
-          <button class="event__reset-btn"type="reset" ${(isDisabled) ? 'disabled' : ''}>Cancel</button>
+          <button class="event__save-btn btn btn--blue" type="submit">${isSaving ? 'Saving...' : 'Save'}</button>
+          <button class="event__reset-btn"type="reset">Cancel</button>
         </header>
         <section class="event__details">
           ${createOffersContainer(arrayOffers, offers, type)}
@@ -153,7 +153,6 @@ function createAdditionPointFormTemplate(point, arrayDestinations, arrayOffers) 
 
 export default class AdditionPointView extends AbstractStatefulView {
   #point = null;
-  #initialState = null;
   #destinations = null;
   #offers = null;
   #handleFormSubmit = null;
@@ -310,7 +309,7 @@ export default class AdditionPointView extends AbstractStatefulView {
 
   #priceInputHandler = (evt) => {
     const numericValue = evt.target.value.replace(/\D/g, '') || 0;
-    this.updateElement({
+    this._setState({
       basePrice: numericValue,
     });
   };

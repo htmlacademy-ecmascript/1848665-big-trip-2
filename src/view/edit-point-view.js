@@ -140,8 +140,8 @@ function createEditPointFormTemplate(point, arrayDestinations, arrayOffers) {
             <input class="event__input event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}" ${(isDisabled) ? 'disabled' : ''}>
           </div>
           <button class="event__save-btn btn btn--blue" type="submit" ${(isDisabled) ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
-          <button class="event__reset-btn" type="reset" ${(isDisabled) ? 'disabled' : ''}>${(isDeleting) ? 'Deleting...' : 'Delete'}</button>
-          <button class="event__rollup-btn" type="button" ${(isDisabled) ? 'disabled' : ''}>
+          <button class="event__reset-btn" type="reset">${(isDeleting) ? 'Deleting...' : 'Delete'}</button>
+          <button class="event__rollup-btn" type="button">
             <span class="visually-hidden">Open event</span>
           </button>
         </header>
@@ -320,7 +320,7 @@ export default class EditPointView extends AbstractStatefulView {
 
   #priceInputHandler = (evt) => {
     const numericValue = evt.target.value.replace(/\D/g, '') || 0;
-    this.updateElement({
+    this._setState({
       basePrice: numericValue,
     });
   };
