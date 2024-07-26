@@ -126,6 +126,8 @@ export default class BoardPresenter {
         break;
       case UpdateType.ERROR:
         this.#isLoading = false;
+        this.#isFirstRender = true;
+        this.#renderNewPointButton();
         remove(this.#loadingComponent);
         remove(this.#sortComponent);
         this.#clearBoard();

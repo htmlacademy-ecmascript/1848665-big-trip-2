@@ -35,16 +35,16 @@ export default class PointPresenter {
 
     this.#pointComponent = new EventsItemView({
       point: this.#point,
-      destinations: this.#destinations,
-      offers: this.#offers,
+      availableDestinations: this.#destinations,
+      availableOffers: this.#offers,
       onEditClick: this.#handleEditClick,
       onFavoriteClick: this.#handleFavoriteClick,
     });
 
     this.#formPointComponent = new EditPointView({
       point: this.#point,
-      destinations: this.#destinations,
-      offers: this.#offers,
+      availableDestinations: this.#destinations,
+      availableOffers: this.#offers,
       onFormSubmit: this.#handleFormSubmit,
       onFormArrowClick: this.#handleFormArrowClick,
       deleteFormClick: this.#handleDeleteClick,

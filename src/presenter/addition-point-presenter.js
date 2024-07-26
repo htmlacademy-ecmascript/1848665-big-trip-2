@@ -29,8 +29,8 @@ export default class AdditionPointPresenter extends AbstractView {
 
     this.#additionPointComponent = new AdditionPointView({
       point: this.#point,
-      destinations: this.#destinations,
-      offers: this.#offers,
+      availableDestinations: this.#destinations,
+      availableOffers: this.#offers,
       onFormSubmit: this.#handleFormSubmit,
       onCancelForm: this.#cancelFormHandler,
     });

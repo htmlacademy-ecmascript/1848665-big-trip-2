@@ -75,14 +75,14 @@ function createDestinationSection(pointDestination) {
   return '';
 }
 
-function createDestinationOptions(arrayDestinations) {
-  if (!arrayDestinations.length) {
+function createDestinationList(availableDestinations) {
+  if (!availableDestinations.length) {
     return '';
   }
-  return arrayDestinations.map((element) => `<option value="${element.name}"></option>`).join('');
+  return availableDestinations.map((element) => `<option value="${element.name}"></option>`).join('');
 }
 
-function createTypeRadioButtons(array, checkedType) {
+function createTypeList(array, checkedType) {
   if (!array.length) {
     return '';
   }
@@ -97,9 +97,9 @@ function createTypeRadioButtons(array, checkedType) {
   }).join('');
 }
 
-function createEditPointFormTemplate(point, arrayDestinations, arrayOffers) {
+function createPointEditForm(point, availableDestinations, availableOffers) {
   const {basePrice, dateFrom, dateTo, destination, offers, type, isDisabled, isSaving, isDeleting} = point;
-  const pointDestination = arrayDestinations.filter((element) => destination === element.id)[0];
+  const pointDestination = availableDestinations.filter((element) => destination === element.id)[0];
 
   return (
     `<li class="trip-events__item">
@@ -114,7 +114,7 @@ function createEditPointFormTemplate(point, arrayDestinations, arrayOffers) {
             <div class="event__type-list">
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Event type</legend>
-                ${createTypeRadioButtons(pointTypes, type)}
+                ${createTypeList(pointTypes, type)}
               </fieldset>
             </div>
           </div>
@@ -122,7 +122,7 @@ function createEditPointFormTemplate(point, arrayDestinations, arrayOffers) {
             <label class="event__label event__type-output" for="event-destination-1">${type}</label>
             <input class="event__input event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${pointDestination.name}" list="destination-list-1" autocomplete="off" ${(isDisabled) ? 'disabled' : ''}>
             <datalist id="destination-list-1">
-              ${createDestinationOptions(arrayDestinations)}
+              ${createDestinationList(availableDestinations)}
             </datalist>
           </div>
           <div class="event__field-group event__field-group--time">
@@ -146,7 +146,7 @@ function createEditPointFormTemplate(point, arrayDestinations, arrayOffers) {
           </button>
         </header>
         <section class="event__details">
-          ${createOffersContainer(arrayOffers, offers, type)}
+          ${createOffersContainer(availableOffers, offers, type)}
           ${createDestinationSection(pointDestination)}
         </section>
       </form>
@@ -155,22 +155,22 @@ function createEditPointFormTemplate(point, arrayDestinations, arrayOffers) {
 }
 
 export default class EditPointView extends AbstractStatefulView {
-  #destinations = null;
-  #offers = null;
+  #availableDestinations = null;
+  #availableOffers = null;
   #handleFormSubmit = null;
   #handleFormArrowClick = null;
-  #handleFormDeleteClick = null;
+  #handleDeleteClick = null;
   #dateFromDatapicker = null;
   #dateToDatapicker = null;
 
-  constructor({point, destinations, offers, onFormSubmit, onFormArrowClick, deleteFormClick}) {
+  constructor({point, availableDestinations, availableOffers, onFormSubmit, onFormArrowClick, deleteFormClick}) {
     super();
     this._setState(EditPointView.parsePointToState(point));
-    this.#destinations = destinations;
-    this.#offers = offers;
+    this.#availableDestinations = availableDestinations;
+    this.#availableOffers = availableOffers;
     this.#handleFormSubmit = onFormSubmit;
     this.#handleFormArrowClick = onFormArrowClick;
-    this.#handleFormDeleteClick = deleteFormClick;
+    this.#handleDeleteClick = deleteFormClick;
 
     this._restoreHandlers();
   }
@@ -192,7 +192,7 @@ export default class EditPointView extends AbstractStatefulView {
   }
 
   get template() {
-    return createEditPointFormTemplate(this._state, this.#destinations, this.#offers);
+    return createPointEditForm(this._state, this.#availableDestinations, this.#availableOffers);
   }
 
   removeElement() {
@@ -283,7 +283,7 @@ export default class EditPointView extends AbstractStatefulView {
 
   #deleteClickHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormDeleteClick(EditPointView.parseStateToPoint(this._state));
+    this.#handleDeleteClick(EditPointView.parseStateToPoint(this._state));
   };
 
   #destinationInputHandler = (evt) => {
@@ -300,7 +300,7 @@ export default class EditPointView extends AbstractStatefulView {
     }
 
     if (matched) {
-      const destination = this.#destinations.find((element) => element.name === evt.target.value);
+      const destination = this.#availableDestinations.find((element) => element.name === evt.target.value);
       if (destination) {
         this.updateElement({
           destination: destination.id,

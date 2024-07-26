@@ -16,7 +16,7 @@ const renderSortList = (currentSortType) => {
   return sortTypes.map(({name, isDisabled}) => renderSortItem(name, isDisabled, currentSortType)).join('');
 };
 
-const createSortTemplate = (currentSortType) =>
+const createSortSection = (currentSortType) =>
   (
     `<form class="trip-events__trip-sort trip-sort" action="#" method="get">
       ${renderSortList(currentSortType)}
@@ -35,7 +35,7 @@ export default class SortView extends AbstractView {
   }
 
   get template() {
-    return createSortTemplate(this.#currentSortType);
+    return createSortSection(this.#currentSortType);
   }
 
   #sortTypeChangeHandler = (evt) => {
