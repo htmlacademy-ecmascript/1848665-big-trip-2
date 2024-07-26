@@ -8,7 +8,6 @@ export default class AdditionPointPresenter extends AbstractView {
   #eventsListComponent = null;
   #handleDataChange = null;
   #handleCancelForm = null;
-
   #point = null;
   #destinations = null;
   #offers = null;
