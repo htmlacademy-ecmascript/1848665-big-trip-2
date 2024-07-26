@@ -9,7 +9,7 @@ const createFilterList = (filters) => filters.map(({name, count, isChecked}) => 
 </div>
 `).join('');
 
-const createFilterFormTemplate = (filters) => (
+const createFilterForm = (filters) => (
   `<form class="trip-filters" action="#" method="get">
   ${createFilterList(filters)}
   <button class="visually-hidden" type="submit">Accept filter</button>
@@ -28,7 +28,7 @@ export default class FiltersView extends AbstractView {
   }
 
   get template() {
-    return createFilterFormTemplate(this.#filters);
+    return createFilterForm(this.#filters);
   }
 
   #filterInputChangeHandler = (evt) => {

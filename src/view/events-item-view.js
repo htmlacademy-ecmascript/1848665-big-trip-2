@@ -16,7 +16,7 @@ function createOffers(array) {
   }).join('');
 }
 
-function createEventsItemTemplate(point, arrayDestinations, arrayOffers) {
+function createEventsItem(point, availableDestinations, availableOffers) {
   const { type, destination, dateFrom, dateTo, basePrice, isFavorite, offers} = point;
   const date = humanizePointDate(dateFrom, DateFormat.DATE_FORMAT);
   const dateDayFrom = humanizePointDate(dateFrom, DateFormat.DATE_TIME_FORMAT);
@@ -26,8 +26,8 @@ function createEventsItemTemplate(point, arrayDestinations, arrayOffers) {
   const dateTimeTo = humanizePointDate(dateTo, DateFormat.TIME_FORMAT);
   const duration = humanizePointDuration(dateFrom, dateTo);
 
-  const matchingDestinations = destination ? arrayDestinations.filter((element) => destination === element.id)[0].name : '';
-  const matchingOffers = arrayOffers.reduce((acc, currentValue) => {
+  const matchingDestinations = destination ? availableDestinations.filter((element) => destination === element.id)[0].name : '';
+  const matchingOffers = availableOffers.reduce((acc, currentValue) => {
     if (point.type && currentValue.type === point.type) {
       return [...acc, ...currentValue.offers.filter((o) => offers.includes(o.id))];
     }
@@ -74,16 +74,16 @@ function createEventsItemTemplate(point, arrayDestinations, arrayOffers) {
 
 export default class EventsItemView extends AbstractView {
   #point = null;
-  #destinations = null;
-  #offers = null;
+  #availableDestinations = null;
+  #availableOffers = null;
   #handleEditClick = null;
   #handleFavoriteClick = null;
 
-  constructor({point, destinations, offers, onEditClick, onFavoriteClick}) {
+  constructor({point, availableDestinations, availableOffers, onEditClick, onFavoriteClick}) {
     super();
     this.#point = point;
-    this.#destinations = destinations;
-    this.#offers = offers;
+    this.#availableDestinations = availableDestinations;
+    this.#availableOffers = availableOffers;
     this.#handleEditClick = onEditClick;
     this.#handleFavoriteClick = onFavoriteClick;
 
@@ -94,7 +94,7 @@ export default class EventsItemView extends AbstractView {
   }
 
   get template() {
-    return createEventsItemTemplate(this.#point, this.#destinations, this.#offers);
+    return createEventsItem(this.#point, this.#availableDestinations, this.#availableOffers);
   }
 
   #editClickHandler = (evt) => {

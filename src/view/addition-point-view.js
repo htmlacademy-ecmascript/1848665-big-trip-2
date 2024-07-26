@@ -24,12 +24,12 @@ function createOffers(typeOffersObject, selectedOffers) {
   }).join('');
 }
 
-function createOffersContainer(arrayOffers, selectedOffers, type) {
-  if (!arrayOffers || !Array.isArray(arrayOffers)) {
+function createOffersContainer(offers, selectedOffers, type) {
+  if (!offers || !Array.isArray(offers)) {
     return '';
   }
 
-  const typeOffersObject = arrayOffers.find((offerGroup) => offerGroup.type === type);
+  const typeOffersObject = offers.find((offerGroup) => offerGroup.type === type);
 
   if (!typeOffersObject || !typeOffersObject.offers || !typeOffersObject.offers.length) {
     return '';
@@ -75,14 +75,14 @@ function createDestinationSection(pointDestination) {
   return '';
 }
 
-function createDestinationOptions(arrayDestinations) {
-  if (!arrayDestinations.length) {
+function createDestinationList(availableDestinations) {
+  if (!availableDestinations.length) {
     return '';
   }
-  return arrayDestinations.map((element) => `<option value="${element.name}"></option>`).join('');
+  return availableDestinations.map((element) => `<option value="${element.name}"></option>`).join('');
 }
 
-function createTypeRadioButtons(array, checkedType) {
+function createTypeList(array, checkedType) {
   if (!array.length) {
     return '';
   }
@@ -97,9 +97,9 @@ function createTypeRadioButtons(array, checkedType) {
   }).join('');
 }
 
-function createAdditionPointFormTemplate(point, arrayDestinations, arrayOffers) {
+function createPointAdditionForm(point, availableDestinations, availableOffers) {
   const {basePrice, dateFrom, dateTo, destination, offers, type, isDisabled, isSaving} = point;
-  const pointDestination = arrayDestinations.filter((element) => destination === element.id)[0];
+  const pointDestination = availableDestinations.filter((element) => destination === element.id)[0];
 
   return (
     `<li class="trip-events__item">
@@ -114,7 +114,7 @@ function createAdditionPointFormTemplate(point, arrayDestinations, arrayOffers) 
             <div class="event__type-list">
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Event type</legend>
-                  ${createTypeRadioButtons(pointTypes, type.toLowerCase())}
+                  ${createTypeList(pointTypes, type.toLowerCase())}
               </fieldset>
             </div>
           </div>
@@ -122,7 +122,7 @@ function createAdditionPointFormTemplate(point, arrayDestinations, arrayOffers) 
             <label class="event__label event__type-output" for="event-destination-1">${type}</label>
             <input class="event__input event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${pointDestination ? pointDestination.name : ''}" list="destination-list-1"  autocomplete="off" required ${(isDisabled) ? 'disabled' : ''}>
             <datalist id="destination-list-1">
-              ${createDestinationOptions(arrayDestinations)}
+              ${createDestinationList(availableDestinations)}
             </datalist>
           </div>
           <div class="event__field-group event__field-group--time">
@@ -143,7 +143,7 @@ function createAdditionPointFormTemplate(point, arrayDestinations, arrayOffers) 
           <button class="event__reset-btn"type="reset">Cancel</button>
         </header>
         <section class="event__details">
-          ${createOffersContainer(arrayOffers, offers, type)}
+          ${createOffersContainer(availableOffers, offers, type)}
           ${createDestinationSection(pointDestination)}
         </section>
       </form>
@@ -153,20 +153,20 @@ function createAdditionPointFormTemplate(point, arrayDestinations, arrayOffers) 
 
 export default class AdditionPointView extends AbstractStatefulView {
   #point = null;
-  #destinations = null;
-  #offers = null;
+  #availableDestinations = null;
+  #availableOffers = null;
   #handleFormSubmit = null;
-  #handleCancelForm = null;
+  #cancelFormHandler = null;
   #dateFromDatapicker = null;
   #dateToDatapicker = null;
 
-  constructor({point, destinations, offers, onFormSubmit, onCancelForm}) {
+  constructor({point, availableDestinations, availableOffers, onFormSubmit, onCancelForm}) {
     super();
     this._setState(AdditionPointView.parsePointToState(point));
-    this.#destinations = destinations;
-    this.#offers = offers;
+    this.#availableDestinations = availableDestinations;
+    this.#availableOffers = availableOffers;
     this.#handleFormSubmit = onFormSubmit;
-    this.#handleCancelForm = onCancelForm;
+    this.#cancelFormHandler = onCancelForm;
 
     this._restoreHandlers();
   }
@@ -186,7 +186,7 @@ export default class AdditionPointView extends AbstractStatefulView {
   }
 
   get template() {
-    return createAdditionPointFormTemplate (this._state, this.#destinations, this.#offers);
+    return createPointAdditionForm (this._state, this.#availableDestinations, this.#availableOffers);
   }
 
   removeElement() {
@@ -211,7 +211,7 @@ export default class AdditionPointView extends AbstractStatefulView {
     this.element.querySelectorAll('.event__type-input').forEach((input) => {
       input.addEventListener('change', this.#typeChangeHandler);
     });
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#handleCancelForm);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#cancelFormHandler);
     this.#setDateFromDatapicker();
     this.#setDateToDatapicker();
   }
@@ -289,7 +289,7 @@ export default class AdditionPointView extends AbstractStatefulView {
     }
 
     if (matched) {
-      const destination = this.#destinations.find((element) => element.name === evt.target.value);
+      const destination = this.#availableDestinations.find((element) => element.name === evt.target.value);
       if (destination) {
         this.updateElement({
           destination: destination.id,

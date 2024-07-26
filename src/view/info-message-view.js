@@ -1,6 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
 
-const createEventsEmptyStateTemplate = (message) => `<p class="trip-events__msg">${message}</p>`;
+const createEventsEmptyState = (message) => `<p class="trip-events__msg">${message}</p>`;
 
 export default class InfoMessageView extends AbstractView {
   #message = null;
@@ -11,6 +11,6 @@ export default class InfoMessageView extends AbstractView {
   }
 
   get template() {
-    return createEventsEmptyStateTemplate(this.#message);
+    return createEventsEmptyState(this.#message);
   }
 }
