@@ -18,7 +18,7 @@ export default class BoardPresenter {
 
   #pointsPresenter = new Map();
   #currentSortType = DEFAULT_SORT_TYPE;
-  #isFirstRender = false;
+  #isFirstRender = true;
   #isLoading = true;
   #loadingComponent = null;
   #errorMessageComponent = null;
@@ -120,6 +120,8 @@ export default class BoardPresenter {
         break;
       case UpdateType.INIT:
         this.#isLoading = false;
+        this.#isFirstRender = false;
+        this.#renderNewPointButton();
         remove(this.#loadingComponent);
         this.#clearBoard();
         this.#renderBoard();
